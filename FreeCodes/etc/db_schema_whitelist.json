@@ -1,0 +1,16 @@
+{
+    "vendor_free_code": {
+        "column": {
+            "code_id": true,
+            "code": true,
+            "claimed_at": true
+        },
+        "index": {
+            "VENDOR_FREE_CODE_CLAIMED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "VENDOR_FREE_CODE_CODE": true
+        }
+    }
+}

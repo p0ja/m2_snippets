@@ -11,14 +11,18 @@ Snippets:
 - `CliEmail` - CLI command `vendor:send-email` sending an email template, with admin configuration
 - `Di` - dependency injection playground with constructor arguments and a virtual type from `di.xml`, CLI command `vendor:di`
 - `DynamicRows` - admin UI form with dynamic rows (`bss/row/index`)
+- `FreeCodes` - CMS widget handing out one-time codes from a pool, one per visitor session, claimed by an AJAX POST controller (`Vendor_FreeCodes`)
 - `Frontend` - frontend page `m2_frontend/index/index` with module assets, a RequireJS map alias and a `data-mage-init` module
 - `Grid` - admin UI listing of categories with a mass delete action and an attribute join plugin (`dev_grid/index/index`)
 - `Knockout` - Knockout.js templates, a custom UI component and a RequireJS mixin, in the admin and on the frontend
 - `MVVM` - admin CRUD with a UI listing and form (`m2_mvvm_things`), frontend controller with a view model
 - `NewtypesGraphQl` - custom GraphQL query `getNewtypes` with type and field resolvers and a cache identity
+- `Popup` - storefront modal showing the CMS block `m2-popup` once per visitor, built from the core `BlockByIdentifier` block and the Magento UI modal
+- `Product` - CLI commands `vendor:product:data` and `vendor:product:attributes` printing the data array and the attributes of a product
+- `WebAPI` - REST endpoint `POST /V1/vendor-ordersynchronizer/setOrderStatus` receiving ERP order statuses, with an ACL resource, an admin order view tab and a sales order grid column (`Vendor_OrderSynchronizer`, see `WebAPI/README.md`)
 
 Installation:
-- copy a snippet directory to `app/code/<Vendor>/<Module>` (e.g. `CRUD` to `app/code/M2/CRUD`), or install it with Composer from its `composer.json`
+- copy a snippet directory to `app/code/<Vendor>/<Module>` (e.g. `CRUD` to `app/code/M2/CRUD`, `WebAPI` to `app/code/Vendor/OrderSynchronizer`), or install it with Composer from its `composer.json`
 - `bin/magento setup:upgrade`
 
 Code quality:
@@ -67,6 +71,17 @@ Other fixes:
 - `Knockout`: fixed a PHP 8 error in the UI component, the data provider without a collection and the case of the UI component name
 - `Grid`: the actions column called an undefined URL builder property
 - `MVVM`: fixed the edit link route and the data persistor key
+
+Added snippets (`FreeCodes`, `Popup`, `Product`, `WebAPI`), ported from an older snippet collection:
+- `WebAPI`: the route requires its own ACL resource; `<resource ref="self"/>` let any customer token change the ERP status of every order
+- `WebAPI`: errors are exceptions (HTTP 400 with every validation error, 404 for an unknown order) instead of HTTP 200 with an error string; a request is saved completely or not at all
+- `WebAPI`: orders are read and saved through `OrderRepositoryInterface` instead of `loadByIncrementId()` and `$order->save()`; the tab reads the order from the request instead of the registry
+- `WebAPI`: the data interface works as a Web API request type (getters and setters with exact docblocks; `created_at` is set by the database), a typed search results interface, a backed enum for the statuses
+- `FreeCodes`: the widget no longer claims a code while rendering, which the full page cache would have shown to every visitor; codes are claimed by a POST controller, with an `UPDATE ... WHERE claimed_at IS NULL` so two visitors cannot get the same code
+- `FreeCodes`: a typed session class with its own namespace replaces the unused session manager subclass; `Zend_Validate` (removed from 2.4.8) is gone; the widget schema location is fixed
+- `Popup`: the CMS block is rendered by the core `BlockByIdentifier` (store, directives, cache tags) instead of raw repository content; the JavaScript module uses `localStorage` with a configurable number of days instead of an undeclared customer data section
+- `Product`: nested values and objects are printed safely (the commands serialized objects, which fails for closures, and cast `void` results to strings); unknown stores are reported
+- all four: `declare(strict_types=1)`, constructor property promotion, `composer.json`, no `setup_version`, declarative schema and data patches, templates escaped with `$escaper`, English `i18n/en_US.csv`, unit tests; phpcs-clean and XML valid against the 2.4.8 XSDs
 
 Known issues:
 - `DynamicRows` depends on the `Vendor_DynamicCategory` module and `NewtypesGraphQl` on `Vendor_Newtypes` (the `Priorities` enum), neither is part of this repository

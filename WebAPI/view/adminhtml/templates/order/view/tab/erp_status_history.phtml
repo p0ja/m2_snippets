@@ -1,0 +1,33 @@
+<?php
+/**
+ * ERP status history of the order; every value is escaped with $escaper in the template.
+ *
+ * @var \Vendor\OrderSynchronizer\Block\Adminhtml\Order\View\Tab\ErpStatusHistory $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$history = $block->getHistory();
+?>
+<section class="admin__page-section">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('ERP Status History')) ?></span>
+    </div>
+    <?php if ($history === []): ?>
+        <p><?= $escaper->escapeHtml(__('The ERP has not sent a status for this order yet.')) ?></p>
+    <?php else: ?>
+        <ul class="note-list">
+            <?php foreach ($history as $status): ?>
+                <li class="note-list-item">
+                    <?php $createdAt = $block->formatDate($status->getCreatedAt(), \IntlDateFormatter::MEDIUM, true); ?>
+                    <span class="note-list-date"><?= $escaper->escapeHtml($createdAt) ?></span>
+                    <span class="note-list-status"><?= $escaper->escapeHtml($block->getStatusLabel($status)) ?></span>
+                    <span class="note-list-customer">
+                        <?= $escaper->escapeHtml(__('ERP order: %1', $status->getErpOrderId())) ?>
+                    </span>
+                    <?php if ($status->getDescription()): ?>
+                        <div class="note-list-comment"><?= $escaper->escapeHtml($status->getDescription()) ?></div>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</section>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Vendor\FreeCodes\Api\ClaimFreeCodeInterface" type="Vendor\FreeCodes\Service\ClaimFreeCode"/>
+
+    <!-- The session storage is a virtual type: only its namespace differs from the core storage -->
+    <virtualType name="Vendor\FreeCodes\Model\Session\Storage" type="Magento\Framework\Session\Storage">
+        <arguments>
+            <argument name="namespace" xsi:type="string">free_codes</argument>
+        </arguments>
+    </virtualType>
+    <type name="Vendor\FreeCodes\Model\Session">
+        <arguments>
+            <argument name="storage" xsi:type="object">Vendor\FreeCodes\Model\Session\Storage</argument>
+        </arguments>
+    </type>
+</config>

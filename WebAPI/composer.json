@@ -1,0 +1,21 @@
+{
+    "name": "vendor/module-order-synchronizer",
+    "description": "Magento 2 snippet: REST endpoint receiving ERP order statuses, with an order view tab and a sales order grid column",
+    "type": "magento2-module",
+    "require": {
+        "php": "~8.3.0||~8.4.0",
+        "magento/framework": "103.0.*",
+        "magento/module-backend": "102.0.*",
+        "magento/module-sales": "103.0.*",
+        "magento/module-ui": "101.2.*",
+        "magento/module-webapi": "100.4.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vendor\\OrderSynchronizer\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    }
+}

@@ -1,0 +1,22 @@
+<?php
+/**
+ * Modal with the child CMS block; nothing is rendered when the CMS block is empty, missing or disabled.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$content = $block->getChildHtml('m2.popup.content');
+if (trim($content) === '') {
+    return;
+}
+
+$config = [
+    'M2_Popup/js/popup' => [
+        'storageKey' => (string)$block->getData('storage_key'),
+        'showAgainAfterDays' => (int)$block->getData('show_again_after_days'),
+    ],
+];
+?>
+<div class="m2-popup no-display" data-mage-init='<?= $escaper->escapeHtmlAttr(json_encode($config)) ?>'>
+    <?= /* @noEscape */ $content /* HTML of a CMS block, written by an admin and filtered by the CMS block */ ?>
+</div>

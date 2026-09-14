@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+    No PHP block class: a generic template block wraps the core Magento\Cms\Block\BlockByIdentifier, which loads the
+    CMS block for the current store, processes its directives ({{widget}}, {{media}}), renders nothing when the
+    block is missing or disabled, and adds the CMS block cache tags, so saving the block refreshes the full page
+    cache. Change the identifier or the number of days here, or in a theme layout.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template" name="m2.popup"
+                   template="M2_Popup::popup.phtml">
+                <arguments>
+                    <argument name="storage_key" xsi:type="string">m2-popup</argument>
+                    <argument name="show_again_after_days" xsi:type="number">30</argument>
+                </arguments>
+                <block class="Magento\Cms\Block\BlockByIdentifier" name="m2.popup.content">
+                    <arguments>
+                        <argument name="identifier" xsi:type="string">m2-popup</argument>
+                    </arguments>
+                </block>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
