@@ -8,17 +8,37 @@ use M2\MVVM\Model\ResourceModel\Thing\CollectionFactory;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Ui\DataProvider\AbstractDataProvider;
 
+/**
+ * Form data provider of m2_mvvm_things_form.
+ *
+ * Changed: the redeclared $meta property (private, shadowing the parent's protected one) and the empty
+ * prepareMeta() hook were removed; the data persistor key is a constant shared with the Save controller.
+ */
 class DataProvider extends AbstractDataProvider
 {
-    protected $collection;
-    protected array $loadedData;
-    private array $meta;
+    public const DATA_PERSISTOR_KEY = 'm2_mvvm_thing';
 
+    /**
+     * @var array|null
+     */
+    private ?array $loadedData = null;
+
+    /**
+     * Constructor
+     *
+     * @param string $name
+     * @param string $primaryFieldName
+     * @param string $requestFieldName
+     * @param CollectionFactory $collectionFactory
+     * @param DataPersistorInterface $dataPersistor
+     * @param array $meta
+     * @param array $data
+     */
     public function __construct(
         string $name,
         string $primaryFieldName,
         string $requestFieldName,
-        private readonly CollectionFactory $collectionFactory,
+        CollectionFactory $collectionFactory,
         private readonly DataPersistorInterface $dataPersistor,
         array $meta = [],
         array $data = []
@@ -26,35 +46,30 @@ class DataProvider extends AbstractDataProvider
         $this->collection = $collectionFactory->create();
 
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
-        $this->meta = $this->prepareMeta($this->meta);
     }
 
-    public function prepareMeta(array $meta): array
-    {
-        return $meta;
-    }
-
+    /**
+     * @inheritDoc
+     */
     public function getData(): array
     {
-        if (isset($this->loadedData)) {
+        if ($this->loadedData !== null) {
             return $this->loadedData;
         }
 
-        $items = $this->collection->getItems();
-
-        foreach ($items as $item) {
+        $this->loadedData = [];
+        foreach ($this->collection->getItems() as $item) {
             $this->loadedData[$item->getId()] = $item->getData();
         }
 
-        $data = $this->dataPersistor->get('m2_mvvm_thing');
-
+        $data = $this->dataPersistor->get(self::DATA_PERSISTOR_KEY);
         if (!empty($data)) {
             $item = $this->collection->getNewEmptyItem();
             $item->setData($data);
             $this->loadedData[$item->getId()] = $item->getData();
-            $this->dataPersistor->clear('m2_mvvm_thing');
+            $this->dataPersistor->clear(self::DATA_PERSISTOR_KEY);
         }
 
-        return $this->loadedData ?? [];
+        return $this->loadedData;
     }
 }

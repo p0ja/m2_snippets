@@ -1,19 +1,23 @@
 <?xml version="1.0"?>
+<!--
+    Changed:
+    - the stylesheet and the script are added with <head> instructions on this page only. test.css was added to
+      every storefront page by default.xml (removed), and the script was printed by a head.phtml template, which
+      Content Security Policy (strict on checkout pages since 2.4.7) and full page cache handle worse than
+      assets declared in layout;
+    - the content block is the generic template block (M2\Frontend\Block\Main was an empty class), and the
+      references are inside <body> as page_configuration.xsd requires.
+-->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <!-- <head>
+    <head>
         <css src="M2_Frontend::test.css"/>
-        <link src="M2_Frontend::test.js"/>
-    </head> -->
-    <referenceBlock name="head.additional">
-        <block  template="head.phtml"
-                class="M2\Frontend\Block\Head"
-                name="m2_frontend_block_head" />
-    </referenceBlock>
-
-    <referenceContainer name="content">
-        <block template="content.phtml"
-               class="M2\Frontend\Block\Main"
-               name="m2_frontend_block_main" />
-    </referenceContainer>
+        <script src="M2_Frontend::test.js"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template" name="m2_frontend_block_main"
+                   template="M2_Frontend::content.phtml"/>
+        </referenceContainer>
+    </body>
 </page>

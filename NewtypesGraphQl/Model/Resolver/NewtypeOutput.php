@@ -18,20 +18,18 @@ class NewtypeOutput implements ResolverInterface
     private const DATE_PARAM = 'date';
 
     /**
+     * Constructor
+     *
      * @param NewtypesDataProvider $newtypesDataProvider
      * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly NewtypesDataProvider $newtypesDataProvider,
         private readonly LoggerInterface $logger
-    ){
+    ) {
     }
 
     /**
-     * Changed: a missing "input" argument is rejected with a GraphQL input error instead of an undefined index
-     * warning and a TypeError, which ended as an internal server error. ?array parameters: implicitly nullable
-     * parameters are deprecated in PHP 8.4, supported by Magento 2.4.8.
-     *
      * @inheritDoc
      */
     public function resolve(
@@ -41,6 +39,10 @@ class NewtypeOutput implements ResolverInterface
         ?array $value = null,
         ?array $args = null
     ): array {
+        // Changed: a missing "input" argument is rejected with a GraphQL input error instead of an undefined index
+        // warning and a TypeError, which ended as an internal server error. ?array parameters: implicitly nullable
+        // parameters are deprecated in PHP 8.4, supported by Magento 2.4.8.
+
         if (!isset($args['input']) || !is_array($args['input'])) {
             throw new GraphQlInputException(__('"input" value should be specified.'));
         }
@@ -62,6 +64,8 @@ class NewtypeOutput implements ResolverInterface
     }
 
     /**
+     * Clean input
+     *
      * @param string[] $input
      * @return string[]
      */
@@ -83,6 +87,8 @@ class NewtypeOutput implements ResolverInterface
     }
 
     /**
+     * Validate input
+     *
      * @param string[] $input
      * @return void
      * @throws GraphQlInputException
@@ -98,20 +104,24 @@ class NewtypeOutput implements ResolverInterface
     }
 
     /**
+     * Is valid date
+     *
      * @param string $value
      * @return bool
      */
     private function isValidDate(string $value): bool
     {
-        if (!empty($value)) {
-            try {
-                new DateTime($value);
-
-                return true;
-            } catch (Exception $e) {
-            }
+        if ($value === '') {
+            return false;
         }
 
-        return false;
+        // Changed: the empty catch block hid the reason; an unparsable date is simply not valid.
+        try {
+            new DateTime($value);
+        } catch (Exception) {
+            return false;
+        }
+
+        return true;
     }
 }

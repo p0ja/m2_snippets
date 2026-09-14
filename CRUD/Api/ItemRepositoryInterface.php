@@ -5,60 +5,64 @@ declare(strict_types=1);
 namespace M2\CRUD\Api;
 
 use M2\CRUD\Api\Data\ItemInterface;
+use M2\CRUD\Api\Data\ItemSearchResultsInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Api\SearchResultsInterface;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\CouldNotDeleteException;
+use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
- * Interface ItemRepositoryInterface
+ * Item repository service contract.
+ *
+ * Changed: getList() returns the typed ItemSearchResultsInterface, parameters are named after the entity, and the
+ * documented exceptions match what the implementation throws.
  *
  * @api
  */
 interface ItemRepositoryInterface
 {
     /**
-     * Create or update Item.
+     * Create or update an item.
      *
-     * @param ItemInterface $page
+     * @param ItemInterface $item
      * @return ItemInterface
+     * @throws CouldNotSaveException
      */
-    public function save(ItemInterface $page): ItemInterface;
+    public function save(ItemInterface $item): ItemInterface;
 
     /**
-     * Get Item by Id
+     * Get an item by id.
      *
      * @param int $id
      * @return ItemInterface
-     * @throws NoSuchEntityException If Item with the specified ID does not exist.
-     * @throws LocalizedException
+     * @throws NoSuchEntityException If the item does not exist.
      */
     public function getById(int $id): ItemInterface;
 
     /**
-     * Retrieve Items which match a specified criteria.
+     * Retrieve the items matching the criteria.
      *
      * @param SearchCriteriaInterface $criteria
+     * @return ItemSearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $criteria): SearchResultsInterface;
+    public function getList(SearchCriteriaInterface $criteria): ItemSearchResultsInterface;
 
     /**
-     * Delete Item
+     * Delete an item.
      *
-     * @param ItemInterface $page
+     * @param ItemInterface $item
      * @return bool
-     * @throws NoSuchEntityException If Item with the specified ID does not exist.
-     * @throws LocalizedException
+     * @throws CouldNotDeleteException
      */
-    public function delete(ItemInterface $page): bool;
+    public function delete(ItemInterface $item): bool;
 
     /**
-     * Delete Item by Id
+     * Delete an item by id.
      *
      * @param int $id
      * @return bool
-     * @throws NoSuchEntityException If customer with the specified ID does not exist.
-     * @throws LocalizedException
+     * @throws NoSuchEntityException If the item does not exist.
+     * @throws CouldNotDeleteException
      */
     public function deleteById(int $id): bool;
 }

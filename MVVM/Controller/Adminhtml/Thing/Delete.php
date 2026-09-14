@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace M2\MVVM\Controller\Adminhtml\Thing;
 
-use M2\MVVM\Model\ThingRepository;
+use M2\MVVM\Api\ThingRepositoryInterface;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Redirect;
@@ -14,23 +14,30 @@ use Magento\Framework\Exception\LocalizedException;
 /**
  * Changed: HttpPostActionInterface, a delete must not be reachable with a plain GET link (the delete button
  * now posts, see DeleteButton). The id is cast to int, and unexpected errors show a generic message instead
- * of the raw exception text, which could contain SQL details.
+ * of the raw exception text, which could contain SQL details. Depends on ThingRepositoryInterface.
  */
 class Delete extends Action implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'M2_MVVM::things';
 
     /**
+     * Constructor
+     *
      * @param Context $context
-     * @param ThingRepository $objectRepository
+     * @param ThingRepositoryInterface $objectRepository
      */
     public function __construct(
         Context $context,
-        private readonly ThingRepository $objectRepository
+        private readonly ThingRepositoryInterface $objectRepository
     ) {
         parent::__construct($context);
     }
 
+    /**
+     * Execute
+     *
+     * @return Redirect
+     */
     public function execute(): Redirect
     {
         $id = (int)$this->getRequest()->getParam('object_id');

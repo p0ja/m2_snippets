@@ -10,6 +10,8 @@ use Magento\Framework\App\CacheInterface;
 class Process5minTags
 {
     /**
+     * Constructor
+     *
      * @param CacheInterface $cache
      */
     public function __construct(

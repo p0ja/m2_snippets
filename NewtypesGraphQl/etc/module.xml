@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Changed: <sequence> also lists the modules the resolvers use: Magento_Catalog (category repository),
+    Magento_StoreGraphQl (the store in the GraphQL context), Magento_GraphQlCache (the @cache directive) and
+    Vendor_Newtypes (the Priorities enum used by PriorityResolver), which is not part of this repository.
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
     <module name="Vendor_NewtypesGraphQl">
         <sequence>
             <module name="Magento_GraphQl"/>
+            <module name="Magento_GraphQlCache"/>
+            <module name="Magento_StoreGraphQl"/>
+            <module name="Magento_Catalog"/>
+            <module name="Vendor_Newtypes"/>
         </sequence>
     </module>
 </config>

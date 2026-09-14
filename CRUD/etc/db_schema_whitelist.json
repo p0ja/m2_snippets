@@ -1,0 +1,19 @@
+{
+    "m2_crud_item": {
+        "column": {
+            "item_id": true,
+            "item_sku": true,
+            "item_title": true,
+            "date_completed": true,
+            "creation_time": true,
+            "update_time": true,
+            "is_active": true
+        },
+        "index": {
+            "M2_CRUD_ITEM_ITEM_SKU": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

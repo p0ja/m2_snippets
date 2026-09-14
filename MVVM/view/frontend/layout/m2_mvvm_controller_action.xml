@@ -1,10 +1,18 @@
 <?xml version="1.0"?>
+<!--
+    Changed: the schema location is the urn instead of a relative path that only resolved inside app/code of a
+    full Magento checkout, and the block is a generic template block with the Greeting view model.
+-->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
-      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
-    <referenceBlock name="content">
-        <block
-                template="content.phtml"
-                class="M2\MVVM\Block\Main"
-                name="m2_mvvm_controller_action"/>
-    </referenceBlock>
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template" name="m2_mvvm_controller_action"
+                   template="M2_MVVM::content.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">M2\MVVM\ViewModel\Greeting</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
 </page>

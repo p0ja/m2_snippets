@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+    Added: runs the Magento 2 coding standard over every snippet module.
+    Install once:  composer create-project magento/magento-coding-standard ../magento-coding-standard
+    Run:           ../magento-coding-standard/vendor/bin/phpcs
+-->
+<ruleset name="m2_snippets">
+    <description>Magento 2 coding standard for the m2_snippets modules</description>
+    <arg name="extensions" value="php,phtml"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <file>.</file>
+    <exclude-pattern>.idea/*</exclude-pattern>
+
+    <rule ref="Magento2"/>
+</ruleset>

@@ -1,22 +1,32 @@
 <?php
+
 declare(strict_types=1);
 
 namespace M2\Frontend\Controller\Index;
 
-use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\PageFactory;
 
-class Index extends Action
+/**
+ * Changed: implements HttpGetActionInterface directly instead of extending Magento\Framework\App\Action\Action,
+ * which is deprecated since 2.4; the controller injects only the page factory it uses.
+ */
+class Index implements HttpGetActionInterface
 {
+    /**
+     * Constructor
+     *
+     * @param PageFactory $resultPageFactory
+     */
     public function __construct(
-        protected Context $context,
-        private readonly PageFactory $resultPageFactory,
+        private readonly PageFactory $resultPageFactory
     ) {
-        parent::__construct($context);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function execute(): ResultInterface
     {
         return $this->resultPageFactory->create();

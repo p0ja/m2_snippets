@@ -13,6 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RunClearCache extends Command
 {
     /**
+     * Constructor
+     *
      * @param Process5minTags $process5minTags
      */
     public function __construct(
@@ -26,28 +28,33 @@ class RunClearCache extends Command
      */
     protected function configure(): void
     {
-        parent::configure();
-
         $this->setName('vendor:cache:clear');
         $this->setDescription('Clears cache by tags.');
+
+        parent::configure();
     }
 
     /**
      * @inheritDoc
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // Changed: returns FAILURE when cleaning fails or the cache reports it did not clean, so scripts and CI can
+        // detect it; it always returned SUCCESS and printed the error as normal output.
+
         try {
-            $this->process5minTags->cleanCacheByTag();
+            if (!$this->process5minTags->cleanCacheByTag()) {
+                $output->writeln('<error>The cache was not cleaned.</error>');
+
+                return Command::FAILURE;
+            }
         } catch (Exception $e) {
-            $msg = sprintf('Error running command: %s', $e->getMessage());
-            $output->writeln($msg);
+            $output->writeln(sprintf('<error>Error running command: %s</error>', $e->getMessage()));
+
+            return Command::FAILURE;
         }
+
+        $output->writeln('<info>Cache entries with the 5 minute tags have been cleaned.</info>');
 
         return Command::SUCCESS;
     }

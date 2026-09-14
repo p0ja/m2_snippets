@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!-- Added: service contract preferences; the module had none, so the interfaces could not be injected -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="M2\MVVM\Api\ThingRepositoryInterface" type="M2\MVVM\Model\ThingRepository"/>
+    <preference for="M2\MVVM\Api\Data\ThingInterface" type="M2\MVVM\Model\Thing"/>
+    <preference for="M2\MVVM\Api\Data\ThingSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+</config>

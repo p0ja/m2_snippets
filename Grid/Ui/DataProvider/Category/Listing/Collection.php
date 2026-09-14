@@ -8,6 +8,9 @@ use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
 
 class Collection extends SearchResult
 {
+    /**
+     * Maps the grid filter fields to the columns of the joined select
+     */
     protected function _initSelect()
     {
         $this->addFilterToMap('entity_id', 'main_table.entity_id');

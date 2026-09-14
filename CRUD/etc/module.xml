@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
+<!--
+    Changed: setup_version removed. It is only read by the deprecated Install/Upgrade scripts; with declarative
+    schema and patches Magento tracks changes itself.
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="M2_CRUD" setup_version="0.0.1"/>
+    <module name="M2_CRUD"/>
 </config>

@@ -36,6 +36,8 @@ class MassDelete extends Action implements HttpPostActionInterface
     private const MIN_DELETABLE_LEVEL = 2;
 
     /**
+     * Constructor
+     *
      * @param Action\Context $context
      * @param Filter $filter
      * @param CollectionFactory $collectionFactory
@@ -51,6 +53,8 @@ class MassDelete extends Action implements HttpPostActionInterface
     }
 
     /**
+     * Execute
+     *
      * @return ResultInterface
      * @throws LocalizedException
      */

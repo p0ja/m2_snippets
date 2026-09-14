@@ -1,13 +1,15 @@
 <?php
 /**
- * Changed: uses the $block and $escaper variables Magento 2.4 passes to templates. $this->escapeHtml() is
- * deprecated in templates, and the name comes from the request, so it must stay escaped.
+ * Changed: reads the Greeting view model passed in layout XML; output is escaped with $escaper, the name comes
+ * from the request.
  *
- * @var \M2\MVVM\Block\Main $block
+ * @var \Magento\Framework\View\Element\Template $block
  * @var \Magento\Framework\Escaper $escaper
+ * @var \M2\MVVM\ViewModel\Greeting $viewModel
  */
+$viewModel = $block->getData('view_model');
 ?>
-<h1>content static text</h1>
-<h2><?= $escaper->escapeHtml($block->getMessage()) ?></h2>
+<h1><?= $escaper->escapeHtml(__('content static text')) ?></h1>
+<h2><?= $escaper->escapeHtml($viewModel->getMessage()) ?></h2>
 
-<div><?= $escaper->escapeHtml($block->getName()) ?></div>
+<div><?= $escaper->escapeHtml($viewModel->getName()) ?></div>

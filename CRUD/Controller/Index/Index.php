@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 namespace M2\CRUD\Controller\Index;
 
-use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\PageFactory;
 
 /**
- * Changed: HttpGetActionInterface limits the page to GET requests, and the missing ResultInterface import made
- * the return type resolve to a non-existent class in this namespace (TypeError on every request).
+ * Changed: implements HttpGetActionInterface directly instead of extending Magento\Framework\App\Action\Action,
+ * which is deprecated since 2.4 in favour of composition. The controller injects only what it uses.
  */
-class Index extends Action implements HttpGetActionInterface
+class Index implements HttpGetActionInterface
 {
-
-    protected $resultPageFactory;
-
+    /**
+     * Constructor
+     *
+     * @param PageFactory $resultPageFactory
+     */
     public function __construct(
-        Context $context,
-        PageFactory $resultPageFactory
+        private readonly PageFactory $resultPageFactory
     ) {
-        $this->resultPageFactory = $resultPageFactory;
-        parent::__construct($context);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function execute(): ResultInterface
     {
         return $this->resultPageFactory->create();

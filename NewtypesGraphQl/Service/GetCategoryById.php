@@ -18,6 +18,8 @@ use Magento\Framework\Exception\NoSuchEntityException;
 class GetCategoryById
 {
     /**
+     * Constructor
+     *
      * @param CategoryRepositoryInterface $categoryRepository
      */
     public function __construct(
@@ -26,6 +28,8 @@ class GetCategoryById
     }
 
     /**
+     * Execute
+     *
      * @param int $categoryId
      * @param int $storeId
      * @return CategoryInterface|null

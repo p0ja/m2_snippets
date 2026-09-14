@@ -1,59 +1,68 @@
 <?php
 
+declare(strict_types=1);
+
 namespace M2\MVVM\Api;
 
 use M2\MVVM\Api\Data\ThingInterface;
+use M2\MVVM\Api\Data\ThingSearchResultsInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\CouldNotDeleteException;
+use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
- * A Repository Model defines common CRUD operations
- * (Create, Replace, Update, Delete) for models.
+ * A repository defines the common CRUD operations (create, read, update, delete) for an entity.
+ *
+ * Changed: getList() declared an array return type while it returns a search results object (TypeError); it now
+ * returns ThingSearchResultsInterface.
+ *
+ * @api
  */
 interface ThingRepositoryInterface
 {
     /**
-     * Creates a new record if no id present,
-     * otherwise updates an existing record with the specified id.
+     * Creates a new record when there is no id, otherwise updates the record with that id.
      *
-     * @param ThingInterface $thing data entity interface
-     *
+     * @param ThingInterface $thing
      * @return ThingInterface
+     * @throws CouldNotSaveException
      */
     public function save(ThingInterface $thing): ThingInterface;
 
     /**
-     * Performs a database lookup by id and returns a data entity interface
+     * Get by id
      *
+     * @param int $id
+     * @return ThingInterface
      * @throws NoSuchEntityException
-     * @throws LocalizedException
      */
     public function getById(int $id): ThingInterface;
 
     /**
-     * Performs a search for all data entities matching the search criteria and
-     * returns a search results interface to give access to the set of matches.
+     * Returns the things matching the search criteria.
      *
-     * @returns [] ThingInterface
+     * @param SearchCriteriaInterface $criteria
+     * @return ThingSearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $criteria): array;
+    public function getList(SearchCriteriaInterface $criteria): ThingSearchResultsInterface;
 
     /**
-     * Deletes the specified entity (the key is in the entity).
+     * Delete
      *
-     * @param ThingInterface $thing data entity interface
-     *
-     * @throws NoSuchEntityException
-     * @throws LocalizedException
+     * @param ThingInterface $thing
+     * @return bool
+     * @throws CouldNotDeleteException
      */
     public function delete(ThingInterface $thing): bool;
 
     /**
-     * Deletes the specified entity when you only have the key for the entity.
+     * Delete by id
      *
+     * @param int $id
+     * @return bool
      * @throws NoSuchEntityException
-     * @throws LocalizedException
+     * @throws CouldNotDeleteException
      */
     public function deleteById(int $id): bool;
 }

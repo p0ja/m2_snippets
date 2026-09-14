@@ -1,0 +1,17 @@
+{
+    "name": "m2/module-crud",
+    "description": "Magento 2 snippet: model, resource model, collection and repository with search criteria",
+    "type": "magento2-module",
+    "require": {
+        "php": "~8.3.0||~8.4.0",
+        "magento/framework": "103.0.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "M2\\CRUD\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    }
+}

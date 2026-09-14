@@ -16,15 +16,20 @@ use Magento\Framework\Controller\ResultInterface;
  */
 class Index extends Action implements HttpGetActionInterface
 {
-   public const ADMIN_RESOURCE = 'Vendor_DynamicRows::dynamic_rows';
+    public const ADMIN_RESOURCE = 'Vendor_DynamicRows::dynamic_rows';
 
-   public function execute(): ResultInterface
-   {
-       $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
-       $resultPage->setActiveMenu('Vendor_DynamicRows::dynamic_rows');
-       $resultPage->getConfig()->getTitle()->prepend(__('Dynamic Rows'));
-       $resultPage->addBreadcrumb(__('Dynamic Rows'), __('Dynamic Rows'));
+    /**
+     * Execute
+     *
+     * @return ResultInterface
+     */
+    public function execute(): ResultInterface
+    {
+        $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
+        $resultPage->setActiveMenu('Vendor_DynamicRows::dynamic_rows');
+        $resultPage->getConfig()->getTitle()->prepend(__('Dynamic Rows'));
+        $resultPage->addBreadcrumb(__('Dynamic Rows'), __('Dynamic Rows'));
 
-       return $resultPage;
-   }
+        return $resultPage;
+    }
 }

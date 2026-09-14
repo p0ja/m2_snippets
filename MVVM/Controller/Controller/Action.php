@@ -13,6 +13,8 @@ use Magento\Framework\View\Result\PageFactory;
 class Action implements HttpGetActionInterface
 {
     /**
+     * Constructor
+     *
      * @param Context $context
      * @param PageFactory $pageFactory
      */

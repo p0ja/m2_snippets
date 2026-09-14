@@ -6,18 +6,38 @@ namespace M2\CliEmail\Service;
 
 use Exception;
 use M2\CliEmail\Config\Parameters;
-use M2\CliEmail\Helper\Data as DataHelper;
+use M2\CliEmail\Model\Config;
+use Magento\Framework\App\Area;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Framework\Mail\TransportInterface;
+use Magento\Framework\Translate\Inline\StateInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Changed:
+ * - TransportBuilder, StateInterface and LoggerInterface were used without imports (fatal error);
+ * - configuration comes from M2\CliEmail\Model\Config instead of a helper, the store from StoreManagerInterface;
+ * - prepareEmailTemplate() declared a string return type but returns the transport;
+ * - the sender is resolved for the store (setFromByScope's second argument);
+ * - inline translation is resumed in finally, so a failed send no longer leaves it suspended;
+ * - the name is optional, the command option can be omitted;
+ * - returns whether the email was sent, so the command can report it.
+ */
 class SendEmail
 {
     /**
-     * @param DataHelper $helper
+     * Constructor
+     *
+     * @param Config $config
+     * @param StoreManagerInterface $storeManager
      * @param TransportBuilder $transportBuilder
      * @param StateInterface $inlineTranslation
      * @param LoggerInterface $logger
      */
     public function __construct(
-        private readonly DataHelper $helper,
+        private readonly Config $config,
+        private readonly StoreManagerInterface $storeManager,
         private readonly TransportBuilder $transportBuilder,
         private readonly StateInterface $inlineTranslation,
         private readonly LoggerInterface $logger
@@ -25,50 +45,54 @@ class SendEmail
     }
 
     /**
-     * @param string $name
-     * @return $this
+     * Send mail
+     *
+     * @param string|null $name
+     * @return bool
      */
-    public function sendMail(string $name): static
+    public function sendMail(?string $name = null): bool
     {
-        if (!$this->helper->emailServiceEnabled()) {
-            return $this;
+        $storeId = (int)$this->storeManager->getStore()->getId();
+        if (!$this->config->isEnabled($storeId)) {
+            return false;
         }
 
+        $this->inlineTranslation->suspend();
         try {
-            $this->inlineTranslation->suspend();
+            $this->prepareEmailTemplate((string)$name, $storeId)->sendMessage();
 
-            $transport = $this->prepareEmailTemplate($name);
-            $transport->sendMessage();
-
-            $this->inlineTranslation->resume();
+            return true;
         } catch (Exception $e) {
-            $msg = sprintf('[%s] Error sending email: %s', __CLASS__, $e->getMessage());
-            $this->logger->critical($msg);
-        }
+            $this->logger->critical(sprintf('[%s] Error sending email: %s', __CLASS__, $e->getMessage()));
 
-        return $this;
+            return false;
+        } finally {
+            $this->inlineTranslation->resume();
+        }
     }
 
     /**
+     * Prepare email template
+     *
      * @param string $name
-     * @return string
+     * @param int $storeId
+     * @return TransportInterface
      */
-    private function prepareEmailTemplate(string $name): string
+    private function prepareEmailTemplate(string $name, int $storeId): TransportInterface
     {
-        $vars = [
-            'name' => $name,
-            'message_1' => Parameters::CUSTOM_MESSAGE_1,
-            'message_2' => Parameters::CUSTOM_MESSAGE_2,
-            'store' => $this->helper->getStore()
-        ];
-
         return $this->transportBuilder
-            ->setTemplateIdentifier($this->getTemplate())
+            ->setTemplateIdentifier($this->config->getTemplateId($storeId))
             ->setTemplateOptions([
                 'area' => Area::AREA_FRONTEND,
-                'store' => $this->helper->getStoreId()
-            ])->setTemplateVars($vars)
-            ->setFromByScope($this->getSender())
+                'store' => $storeId,
+            ])
+            ->setTemplateVars([
+                'name' => $name,
+                'message_1' => Parameters::CUSTOM_MESSAGE_1,
+                'message_2' => Parameters::CUSTOM_MESSAGE_2,
+                'store' => $this->storeManager->getStore($storeId),
+            ])
+            ->setFromByScope($this->config->getSender($storeId), $storeId)
             ->addTo(Parameters::EMAIL_RECEIVER)
             ->addBcc(Parameters::EMAIL_RECEIVERS_BCC)
             ->getTransport();

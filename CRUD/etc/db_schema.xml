@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+    Added: declarative schema, replacing Setup/InstallSchema.php (deprecated since 2.3). setup:upgrade compares
+    this file with the database and applies the difference. The table was created as "M2_crud_item"; onCreate
+    copies its rows into the lowercase table when the new table is created.
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="m2_crud_item" resource="default" engine="innodb" comment="CRUD Example Item"
+           onCreate="migrateDataFromAnotherTable(M2_crud_item)">
+        <column xsi:type="int" name="item_id" unsigned="true" nullable="false" identity="true" comment="Item ID"/>
+        <column xsi:type="varchar" name="item_sku" nullable="false" length="255" comment="Item SKU"/>
+        <column xsi:type="varchar" name="item_title" nullable="false" length="255" comment="Item Title"/>
+        <column xsi:type="datetime" name="date_completed" nullable="true" comment="Date of Completion"/>
+        <column xsi:type="timestamp" name="creation_time" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="update_time" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Modification Time"/>
+        <column xsi:type="smallint" name="is_active" unsigned="false" nullable="false" identity="false"
+                default="1" comment="Is Active"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="item_id"/>
+        </constraint>
+        <index referenceId="M2_CRUD_ITEM_ITEM_SKU" indexType="btree">
+            <column name="item_sku"/>
+        </index>
+    </table>
+</schema>

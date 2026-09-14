@@ -17,6 +17,8 @@ use Vendor\NewtypesGraphQl\Service\GetCategoryById;
 class CategoryResolver implements ResolverInterface
 {
     /**
+     * Constructor
+     *
      * @param GetCategoryById $getCategoryById
      * @param Uid $uidEncoder
      */
@@ -27,16 +29,7 @@ class CategoryResolver implements ResolverInterface
     }
 
     /**
-     * Changed:
-     * - the category is returned only when it is active and belongs to the current store's category tree. The
-     *   resolver returned any category by id, so a public query exposed disabled categories and categories of
-     *   other stores;
-     * - the field is a list ([CategoryData]), so a list is returned, and uid is encoded like core GraphQL uids;
-     * - ?array for $value and $args: implicitly nullable parameters are deprecated in PHP 8.4, supported by
-     *   Magento 2.4.8;
-     * - $value is checked before array_key_exists(), which throws on null.
-     *
-     * @inheritdoc
+     * @inheritDoc
      */
     public function resolve(
         Field $field,
@@ -45,6 +38,15 @@ class CategoryResolver implements ResolverInterface
         ?array $value = null,
         ?array $args = null
     ) {
+        // Changed:
+        // - the category is returned only when it is active and belongs to the current store's category tree. The
+        //   resolver returned any category by id, so a public query exposed disabled categories and categories of
+        //   other stores;
+        // - the field is a list ([CategoryData]), so a list is returned, and uid is encoded like core GraphQL uids;
+        // - ?array for $value and $args: implicitly nullable parameters are deprecated in PHP 8.4, supported by
+        //   Magento 2.4.8;
+        // - $value is checked before array_key_exists(), which throws on null.
+
         if (!isset($value['model']) || !$value['model'] instanceof NewtypeInterface) {
             throw new LocalizedException(__('"model" value should be specified'));
         }

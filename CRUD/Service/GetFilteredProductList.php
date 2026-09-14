@@ -18,6 +18,8 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 class GetFilteredProductList
 {
     /**
+     * Constructor
+     *
      * @param FilterBuilder $filterBuilder
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param ItemRepositoryInterface $itemRepository
@@ -30,6 +32,8 @@ class GetFilteredProductList
     }
 
     /**
+     * Execute
+     *
      * @param string $pattern SQL LIKE pattern for the SKU, the value is bound by the collection
      * @return ItemInterface[]
      */

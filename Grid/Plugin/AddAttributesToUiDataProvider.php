@@ -12,6 +12,8 @@ use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
 class AddAttributesToUiDataProvider
 {
     /**
+     * Constructor
+     *
      * @param AttributeRepositoryInterface $attributeRepository
      * @param ProductMetadataInterface $productMetadata
      */
@@ -22,6 +24,8 @@ class AddAttributesToUiDataProvider
     }
 
     /**
+     * After get search result
+     *
      * @param CategoryDataProvider $subject
      * @param SearchResult $result
      * @return SearchResult

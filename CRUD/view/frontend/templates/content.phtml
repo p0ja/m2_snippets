@@ -1,18 +1,22 @@
 <?php
 /**
- * Changed: lists the items read by M2\CRUD\Block\Main. Every value is escaped with $escaper, which Magento 2.4
- * passes to each template, instead of dumping raw rows with var_dump().
+ * Lists the items provided by the M2\CRUD\ViewModel\ItemList view model.
  *
- * @var \M2\CRUD\Block\Main $block
+ * Changed: reads the view model passed in layout XML and the ItemInterface getters; every value is escaped with
+ * $escaper, which Magento 2.4 passes to each template.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
  * @var \Magento\Framework\Escaper $escaper
+ * @var \M2\CRUD\ViewModel\ItemList $viewModel
  */
+$viewModel = $block->getData('view_model');
 ?>
 <h1><?= $escaper->escapeHtml(__('Items')) ?></h1>
 <ul>
-    <?php foreach ($block->getItems() as $item): ?>
+    <?php foreach ($viewModel->getItems() as $item): ?>
         <li>
-            <?= $escaper->escapeHtml($item->getData('item_sku')) ?>
-            &ndash; <?= $escaper->escapeHtml($item->getData('item_title')) ?>
+            <?= $escaper->escapeHtml($item->getSku()) ?>
+            &ndash; <?= $escaper->escapeHtml($item->getTitle()) ?>
         </li>
     <?php endforeach; ?>
 </ul>

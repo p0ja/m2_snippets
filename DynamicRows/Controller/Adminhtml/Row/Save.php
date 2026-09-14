@@ -25,57 +25,74 @@ use Vendor\DynamicRows\Model\Source\Condition;
  */
 class Save extends Action implements HttpPostActionInterface
 {
-   public const ADMIN_RESOURCE = 'Vendor_DynamicRows::dynamic_rows';
+    public const ADMIN_RESOURCE = 'Vendor_DynamicRows::dynamic_rows';
 
-   /**
-    * Fields of one dynamic row in view/adminhtml/ui_component/dynamic_rows.xml.
-    */
-   private const ALLOWED_FIELDS = ['condition', 'value'];
+    /**
+     * Fields of one dynamic row in view/adminhtml/ui_component/dynamic_rows.xml.
+     */
+    private const ALLOWED_FIELDS = ['condition', 'value'];
 
-   public function __construct(
-       Context $context,
-       private readonly CategoryRuleFactory $dynamicRowFactory,
-       private readonly CategoryRuleResourceFactory $dynamicRowResource,
-       private readonly Condition $conditionSource
-   ) {
-       parent::__construct($context);
-   }
+    /**
+     * Constructor
+     *
+     * @param Context $context
+     * @param CategoryRuleFactory $dynamicRowFactory
+     * @param CategoryRuleResourceFactory $dynamicRowResource
+     * @param Condition $conditionSource
+     */
+    public function __construct(
+        Context $context,
+        private readonly CategoryRuleFactory $dynamicRowFactory,
+        private readonly CategoryRuleResourceFactory $dynamicRowResource,
+        private readonly Condition $conditionSource
+    ) {
+        parent::__construct($context);
+    }
 
-   public function execute(): ResultInterface
-   {
-       $resultRedirect = $this->resultRedirectFactory->create()->setPath('*/*/index/scope/stores');
-       $dynamicRowData = $this->getRequest()->getPostValue('dynamic_rows_container');
+    /**
+     * Execute
+     *
+     * @return ResultInterface
+     */
+    public function execute(): ResultInterface
+    {
+        $resultRedirect = $this->resultRedirectFactory->create()->setPath('*/*/index/scope/stores');
+        $dynamicRowData = $this->getRequest()->getPostValue('dynamic_rows_container');
 
-       if (!is_array($dynamicRowData)) {
-           $this->messageManager->addErrorMessage(__('No rows were submitted, nothing has been changed.'));
+        if (!is_array($dynamicRowData)) {
+            $this->messageManager->addErrorMessage(__('No rows were submitted, nothing has been changed.'));
 
-           return $resultRedirect;
-       }
+            return $resultRedirect;
+        }
 
-       $allowedConditions = array_column($this->conditionSource->toOptionArray(), 'value');
-       $rows = [];
-       foreach ($dynamicRowData as $dynamicRowDatum) {
-           $row = array_intersect_key((array)$dynamicRowDatum, array_flip(self::ALLOWED_FIELDS));
-           if (!in_array($row['condition'] ?? null, $allowedConditions, true)) {
-               $this->messageManager->addErrorMessage(__('A row has an invalid condition, nothing has been changed.'));
+        $allowedConditions = array_column($this->conditionSource->toOptionArray(), 'value');
+        $rows = [];
+        foreach ($dynamicRowData as $dynamicRowDatum) {
+            $row = array_intersect_key((array)$dynamicRowDatum, array_flip(self::ALLOWED_FIELDS));
+            if (!in_array($row['condition'] ?? null, $allowedConditions, true)) {
+                    $this->messageManager->addErrorMessage(
+                        __('A row has an invalid condition, nothing has been changed.')
+                    );
 
-               return $resultRedirect;
-           }
-           $rows[] = $row;
-       }
+                    return $resultRedirect;
+            }
+            $rows[] = $row;
+        }
 
-       try {
-           $this->dynamicRowResource->create()->deleteDynamicRows();
+        try {
+            $dynamicRowResource = $this->dynamicRowResource->create();
+            $dynamicRowResource->deleteDynamicRows();
 
-           foreach ($rows as $row) {
-               $this->dynamicRowFactory->create()->addData($row)->save();
-           }
+            // Changed: rows are saved through the resource model; AbstractModel::save() is deprecated.
+            foreach ($rows as $row) {
+                    $dynamicRowResource->save($this->dynamicRowFactory->create()->addData($row));
+            }
 
-           $this->messageManager->addSuccessMessage(__('Rows have been saved successfully'));
-       } catch (Exception $e) {
-           $this->messageManager->addExceptionMessage($e, __('Something went wrong while saving the rows.'));
-       }
+            $this->messageManager->addSuccessMessage(__('Rows have been saved successfully'));
+        } catch (Exception $e) {
+            $this->messageManager->addExceptionMessage($e, __('Something went wrong while saving the rows.'));
+        }
 
-       return $resultRedirect;
-   }
+        return $resultRedirect;
+    }
 }

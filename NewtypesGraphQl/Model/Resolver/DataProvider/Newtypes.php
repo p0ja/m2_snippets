@@ -9,14 +9,18 @@ use Vendor\NewtypesGraphQl\Service\GetNewtypesList;
 class Newtypes
 {
     /**
+     * Constructor
+     *
      * @param GetNewtypesList $getNewtypesList
      */
     public function __construct(
         private readonly GetNewtypesList $getNewtypesList
-    ){
+    ) {
     }
 
     /**
+     * Get data
+     *
      * @param array $data
      * @return array
      */

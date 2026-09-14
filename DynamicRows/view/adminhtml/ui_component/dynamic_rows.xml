@@ -1,132 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Changed: rewritten from nested <argument>/<item> arrays to the <settings> syntax (Magento 2.2+) validated by
+    ui_configuration.xsd, with <dynamicRows> and <actionDelete> elements instead of generic containers.
+    <aclResource> restricts the data source to the module's ACL resource. The condition select no longer has the
+    default "0", which is not one of its options.
+-->
 <form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
    <argument name="data" xsi:type="array">
        <item name="js_config" xsi:type="array">
            <item name="provider" xsi:type="string">dynamic_rows.dynamic_rows_data_source</item>
-           <item name="deps" xsi:type="string">dynamic_rows.dynamic_rows_data_source</item>
        </item>
        <item name="label" xsi:type="string" translate="true">Dynamic Rows</item>
-       <item name="config" xsi:type="array">
-           <item name="dataScope" xsi:type="string">data</item>
-           <item name="namespace" xsi:type="string">dynamic_rows</item>
-       </item>
        <item name="template" xsi:type="string">templates/form/collapsible</item>
-       <item name="buttons" xsi:type="array">
-           <item name="save" xsi:type="string">Vendor\DynamicRows\Block\Adminhtml\DynamicRows\Edit\SaveButton</item>
-       </item>
    </argument>
-
+   <settings>
+       <buttons>
+           <button name="save" class="Vendor\DynamicRows\Block\Adminhtml\DynamicRows\Edit\SaveButton"/>
+       </buttons>
+       <namespace>dynamic_rows</namespace>
+       <dataScope>data</dataScope>
+       <deps>
+           <dep>dynamic_rows.dynamic_rows_data_source</dep>
+       </deps>
+   </settings>
    <dataSource name="dynamic_rows_data_source">
-       <argument name="dataProvider" xsi:type="configurableObject">
-           <argument name="class" xsi:type="string">Vendor\DynamicRows\Model\DataProvider</argument>
-           <argument name="name" xsi:type="string">dynamic_rows_data_source</argument>
-           <argument name="primaryFieldName" xsi:type="string">row_id</argument>
-           <argument name="requestFieldName" xsi:type="string">scope</argument>
-           <argument name="data" xsi:type="array">
-               <item name="config" xsi:type="array">
-                   <item name="submit_url" xsi:type="url" path="bss/row/save"/>
-               </item>
-           </argument>
-       </argument>
-
        <argument name="data" xsi:type="array">
            <item name="js_config" xsi:type="array">
                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
            </item>
        </argument>
-
+       <settings>
+           <submitUrl path="bss/row/save"/>
+       </settings>
+       <aclResource>Vendor_DynamicRows::dynamic_rows</aclResource>
+       <dataProvider class="Vendor\DynamicRows\Model\DataProvider" name="dynamic_rows_data_source">
+           <settings>
+               <requestFieldName>scope</requestFieldName>
+               <primaryFieldName>row_id</primaryFieldName>
+           </settings>
+       </dataProvider>
    </dataSource>
-
-
-   <fieldset name="dynamic_rows_set">
-       <argument name="data" xsi:type="array">
-           <item name="config" xsi:type="array">
-               <item name="label" xsi:type="string" translate="true">Dynamic Rows</item>
-               <item name="sortOrder" xsi:type="number">10</item>
-           </item>
-       </argument>
-
-       <container name="dynamic_rows_container">
-           <argument name="data" xsi:type="array">
-               <item name="config" xsi:type="array">
-                   <item name="component" xsi:type="string">Magento_Ui/js/dynamic-rows/dynamic-rows</item>
-                   <item name="template" xsi:type="string">ui/dynamic-rows/templates/default</item>
-                   <item name="componentType" xsi:type="string">dynamicRows</item>
-                   <item name="recordTemplate" xsi:type="string">record</item>
-                   <item name="addButtonLabel" xsi:type="string">Add Row</item>
-                   <item name="deleteProperty" xsi:type="boolean">false</item>
-               </item>
-           </argument>
-
-           <container name="record">
+   <fieldset name="dynamic_rows_set" sortOrder="10">
+       <settings>
+           <label translate="true">Dynamic Rows</label>
+       </settings>
+       <dynamicRows name="dynamic_rows_container">
+           <settings>
+               <addButtonLabel translate="true">Add Row</addButtonLabel>
+               <recordTemplate>record</recordTemplate>
+               <deleteProperty>false</deleteProperty>
+               <componentType>dynamicRows</componentType>
+           </settings>
+           <container name="record" component="Magento_Ui/js/dynamic-rows/record">
                <argument name="data" xsi:type="array">
                    <item name="config" xsi:type="array">
-                       <item name="label" xsi:type="string" translate="true">Dynamic Rows</item>
-                       <item name="component" xsi:type="string" translate="true">Magento_Ui/js/dynamic-rows/record</item>
                        <item name="isTemplate" xsi:type="boolean">true</item>
                        <item name="is_collection" xsi:type="boolean">true</item>
+                       <item name="componentType" xsi:type="string">container</item>
                        <item name="showFallbackReset" xsi:type="boolean">false</item>
                    </item>
                </argument>
-
-               <field name="entity_id">
-                   <argument name="data" xsi:type="array">
-                       <item name="config" xsi:type="array">
-                           <item name="label" xsi:type="string" translate="true">ID</item>
-                           <item name="visible" xsi:type="boolean">false</item>
-                           <item name="dataType" xsi:type="string">text</item>
-                           <item name="formElement" xsi:type="string">input</item>
-                           <item name="dataScope" xsi:type="string">entity_id</item>
-                       </item>
-                   </argument>
+               <field name="entity_id" formElement="input">
+                   <settings>
+                       <dataType>text</dataType>
+                       <label translate="true">ID</label>
+                       <visible>false</visible>
+                       <dataScope>entity_id</dataScope>
+                   </settings>
                </field>
-
-               <field name="condition">
-                   <argument name="data" xsi:type="array">
-                       <item name="options" xsi:type="object">Vendor\DynamicRows\Model\Source\Condition</item>
-                       <item name="config" xsi:type="array">
-                           <item name="dataType" xsi:type="string">text</item>
-                           <item name="formElement" xsi:type="string">select</item>
-                           <item name="component" xsi:type="string">Magento_Ui/js/form/element/select</item>
-                           <item name="label" xsi:type="string" translate="true">Condition</item>
-                           <item name="dataScope" xsi:type="string">condition</item>
-                           <item name="default" xsi:type="string">0</item>
-                           <item name="disabled" xsi:type="boolean">false</item>
-                           <item name="showFallbackReset" xsi:type="boolean">false</item>
-                           <item name="sortOrder" xsi:type="string">20</item>
-                       </item>
-                   </argument>
+               <field name="condition" formElement="select" sortOrder="20">
+                   <settings>
+                       <dataType>text</dataType>
+                       <label translate="true">Condition</label>
+                       <dataScope>condition</dataScope>
+                   </settings>
+                   <formElements>
+                       <select>
+                           <settings>
+                               <options class="Vendor\DynamicRows\Model\Source\Condition"/>
+                           </settings>
+                       </select>
+                   </formElements>
                </field>
-
-               <field name="value">
-                   <argument name="data" xsi:type="array">
-                       <item name="config" xsi:type="array">
-                           <item name="dataType" xsi:type="string">string</item>
-                           <item name="formElement" xsi:type="string">input</item>
-                           <item name="componentType" xsi:type="string">field</item>
-                           <item name="label" xsi:type="string" translate="true">Value</item>
-                           <item name="dataScope" xsi:type="string">value</item>
-                           <item name="visible" xsi:type="boolean">false</item>
-                       </item>
-                   </argument>
+               <field name="value" formElement="input">
+                   <settings>
+                       <dataType>text</dataType>
+                       <label translate="true">Value</label>
+                       <dataScope>value</dataScope>
+                       <visible>false</visible>
+                   </settings>
                </field>
-
-               <actionDelete>
-                   <argument name="data" xsi:type="array">
-                       <item name="config" xsi:type="array">
-                           <item name="componentType" xsi:type="string">actionDelete</item>
-                           <item name="dataType" xsi:type="string">text</item>
-                           <item name="fit" xsi:type="boolean">false</item>
-                           <item name="label" xsi:type="string">Actions</item>
-                           <item name="additionalClasses" xsi:type="string">data-grid-actions-cell</item>
-                           <item name="template" xsi:type="string">Magento_Backend/dynamic-rows/cells/action-delete</item>
-                       </item>
-                   </argument>
+               <actionDelete name="action_delete">
+                   <settings>
+                       <dataType>text</dataType>
+                       <label translate="true">Actions</label>
+                       <additionalClasses>
+                           <class name="data-grid-actions-cell">true</class>
+                       </additionalClasses>
+                       <componentType>actionDelete</componentType>
+                   </settings>
                </actionDelete>
-
            </container>
-       </container>
+       </dynamicRows>
    </fieldset>
-
 </form>
-

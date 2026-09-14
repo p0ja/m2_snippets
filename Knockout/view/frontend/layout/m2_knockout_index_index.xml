@@ -1,7 +1,14 @@
 <?xml version="1.0"?>
+<!--
+    Changed: the reference is inside <body> as page_configuration.xsd requires, and the block is the generic
+    template block (M2\Knockout\Block\Main was an empty class).
+-->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <referenceContainer name="content">
-        <block template="content.phtml" class="M2\Knockout\Block\Main" name="m2_knockout_block_main"/>
-    </referenceContainer>
+    <body>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template" name="m2_knockout_block_main"
+                   template="M2_Knockout::content.phtml"/>
+        </referenceContainer>
+    </body>
 </page>

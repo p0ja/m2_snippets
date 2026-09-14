@@ -1,4 +1,9 @@
 <?xml version="1.0"?>
+<!-- Changed: <sequence> lists Magento_Cron, which reads this module's crontab.xml and cron_groups.xml -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Vendor_CacheClearByTags"/>
+    <module name="Vendor_CacheClearByTags">
+        <sequence>
+            <module name="Magento_Cron"/>
+        </sequence>
+    </module>
 </config>

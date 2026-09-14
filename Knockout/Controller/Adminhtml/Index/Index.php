@@ -20,6 +20,12 @@ class Index extends Action implements HttpGetActionInterface
 {
     public const ADMIN_RESOURCE = 'M2_Knockout::menu_1';
 
+    /**
+     * Constructor
+     *
+     * @param Context $context
+     * @param PageFactory $resultPageFactory
+     */
     public function __construct(
         Context $context,
         private readonly PageFactory $resultPageFactory
@@ -27,6 +33,11 @@ class Index extends Action implements HttpGetActionInterface
         parent::__construct($context);
     }
 
+    /**
+     * Execute
+     *
+     * @return ResultInterface
+     */
     public function execute(): ResultInterface
     {
         return $this->resultPageFactory->create();

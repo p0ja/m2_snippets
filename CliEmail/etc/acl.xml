@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+    Added: etc/adminhtml/system.xml protects its section with M2_CliEmail::config, but the resource was never
+    declared, so it could not be granted to admin roles.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="M2_CliEmail::config" title="Custom Email send" translate="title"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

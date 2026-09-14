@@ -11,6 +11,8 @@ use Throwable;
 class ClearCache5minTags
 {
     /**
+     * Constructor
+     *
      * @param LoggerInterface $logger
      * @param Process5minTags $process5minTags
      */
@@ -21,6 +23,8 @@ class ClearCache5minTags
     }
 
     /**
+     * Execute
+     *
      * @return void
      * @throws Throwable
      */

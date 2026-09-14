@@ -1,42 +1,44 @@
 <?xml version="1.0"?>
+<!--
+    Changed: rewritten from nested <argument>/<item> arrays to the <settings> syntax (Magento 2.2+), which the
+    ui_configuration.xsd validates. <aclResource> protects the mui/index/render requests that load the rows.
+    The "Add New" URL uses the lowercase controller path.
+-->
 <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">m2_mvvm_things.m2_mvvm_things_data_source</item>
-            <item name="deps" xsi:type="string">m2_mvvm_things.m2_mvvm_things_data_source</item>
-        </item>
-        <item name="spinner" xsi:type="string">m2_mvvm_things_columns</item>
-        <item name="buttons" xsi:type="array">
-            <item name="add" xsi:type="array">
-                <item name="name" xsi:type="string">add</item>
-                <item name="label" xsi:type="string">Add New</item>
-                <item name="class" xsi:type="string">primary</item>
-                <item name="url" xsi:type="string">*/Thing/new</item>
-            </item>
         </item>
     </argument>
-    <dataSource name="m2_mvvm_things_data_source">
-        <argument name="dataProvider" xsi:type="configurableObject">
-            <argument name="class" xsi:type="string">M2\MVVM\Ui\Component\Listing\DataProviders\M2\Mvvm\Things
-            </argument>
-            <argument name="name" xsi:type="string">m2_mvvm_things_data_source</argument>
-            <argument name="primaryFieldName" xsi:type="string">thing_id</argument>
-            <argument name="requestFieldName" xsi:type="string">id</argument>
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="indexField" xsi:type="string">thing_id</item>
-                    </item>
-                </item>
-            </argument>
-        </argument>
-        <argument name="data" xsi:type="array">
-            <item name="js_config" xsi:type="array">
-                <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
-            </item>
-        </argument>
+    <settings>
+        <buttons>
+            <button name="add">
+                <url path="*/thing/new"/>
+                <class>primary</class>
+                <label translate="true">Add New</label>
+            </button>
+        </buttons>
+        <spinner>m2_mvvm_things_columns</spinner>
+        <deps>
+            <dep>m2_mvvm_things.m2_mvvm_things_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="m2_mvvm_things_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">thing_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>M2_MVVM::things</aclResource>
+        <dataProvider class="M2\MVVM\Ui\Component\Listing\DataProviders\M2\Mvvm\Things"
+                      name="m2_mvvm_things_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>thing_id</primaryFieldName>
+            </settings>
+        </dataProvider>
     </dataSource>
     <listingToolbar name="listing_top">
         <settings>
@@ -46,42 +48,33 @@
         <filters name="listing_filters"/>
     </listingToolbar>
     <columns name="m2_mvvm_things_columns">
-        <selectionsColumn name="ids">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="resizeEnabled" xsi:type="boolean">false</item>
-                    <item name="resizeDefaultWidth" xsi:type="string">55</item>
-                    <item name="indexField" xsi:type="string">thing_id</item>
-                    <item name="sortOrder" xsi:type="number">10</item>
-                </item>
-            </argument>
+        <selectionsColumn name="ids" sortOrder="10">
+            <settings>
+                <indexField>thing_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>55</resizeDefaultWidth>
+            </settings>
         </selectionsColumn>
-        <column name="thing_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">textRange</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">ID</item>
-                </item>
-            </argument>
+        <column name="thing_id" sortOrder="20">
+            <settings>
+                <filter>textRange</filter>
+                <sorting>asc</sorting>
+                <label translate="true">ID</label>
+            </settings>
         </column>
-        <actionsColumn name="actions" class="M2\MVVM\Ui\Component\Listing\Column\M2mvvmthings\PageActions">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="resizeEnabled" xsi:type="boolean">false</item>
-                    <item name="resizeDefaultWidth" xsi:type="string">107</item>
-                    <item name="indexField" xsi:type="string">thing_id</item>
-                    <item name="sortOrder" xsi:type="number">200</item>
-                </item>
-            </argument>
+        <column name="title" sortOrder="105">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Title</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="M2\MVVM\Ui\Component\Listing\Column\M2mvvmthings\PageActions"
+                       sortOrder="200">
+            <settings>
+                <indexField>thing_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>107</resizeDefaultWidth>
+            </settings>
         </actionsColumn>
-        <column name="title">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="label" xsi:type="string">Title</item>
-                    <item name="sortOrder" xsi:type="number">105</item>
-                </item>
-            </argument>
-        </column>
     </columns>
 </listing>
