@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+    claimed_at replaces the free-text "flag" column: a code is free while it is NULL, and the claim query sets it
+    only if it is still NULL (see Model\ResourceModel\FreeCode::claim()).
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="vendor_free_code" resource="default" engine="innodb" comment="Free Code Pool">
+        <column xsi:type="int" name="code_id" unsigned="true" nullable="false" identity="true" comment="Code ID"/>
+        <column xsi:type="varchar" name="code" nullable="false" length="64" comment="Code"/>
+        <column xsi:type="timestamp" name="claimed_at" nullable="true" comment="Claimed At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="code_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="VENDOR_FREE_CODE_CODE">
+            <column name="code"/>
+        </constraint>
+        <index referenceId="VENDOR_FREE_CODE_CLAIMED_AT" indexType="btree">
+            <column name="claimed_at"/>
+        </index>
+    </table>
+</schema>

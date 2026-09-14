@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Adds a column to the core sales order grid; the file is merged with Magento_Sales::sales_order_grid.xml -->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <columns name="sales_order_columns">
+        <column name="current_erp_status" component="Magento_Ui/js/grid/columns/select" sortOrder="200">
+            <settings>
+                <options class="Vendor\OrderSynchronizer\Model\Source\SynchronizationStatus"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">ERP Status</label>
+                <visible>false</visible>
+            </settings>
+        </column>
+    </columns>
+</listing>

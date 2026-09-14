@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Both commands are items of one "commands" argument; the class name stays on one line, whitespace around
+         it would become part of the class name. -->
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="m2_product_data" xsi:type="object">M2\Product\Console\Command\ProductDataShowCommand</item>
+                <item name="m2_product_attributes" xsi:type="object">M2\Product\Console\Command\ProductAttributesShowCommand</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

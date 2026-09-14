@@ -1,0 +1,22 @@
+<?php
+/**
+ * @var \Vendor\FreeCodes\Block\Widget\Codes $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$config = ['Vendor_FreeCodes/js/claim-code' => ['url' => $block->getClaimUrl()]];
+?>
+<div class="free-code" data-mage-init='<?= $escaper->escapeHtmlAttr(json_encode($config)) ?>'>
+    <?php if ($block->getData('title')): ?>
+        <h3 class="free-code-title"><?= $escaper->escapeHtml($block->getData('title')) ?></h3>
+    <?php endif; ?>
+    <button type="button" class="action primary" data-role="claim">
+        <span><?= $escaper->escapeHtml(__('Get my code')) ?></span>
+    </button>
+    <div class="free-code-result" data-role="result" aria-live="polite" hidden>
+        <strong class="free-code-value" data-role="code"></strong>
+        <?php if ($block->getData('note')): ?>
+            <p class="free-code-note"><?= $escaper->escapeHtml($block->getData('note')) ?></p>
+        <?php endif; ?>
+    </div>
+    <div class="message" data-role="message" hidden></div>
+</div>

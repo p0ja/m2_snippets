@@ -1,0 +1,31 @@
+{
+    "vendor_order_erp_status": {
+        "column": {
+            "id": true,
+            "increment_id": true,
+            "erp_order_id": true,
+            "status": true,
+            "description": true,
+            "created_at": true
+        },
+        "index": {
+            "VENDOR_ORDER_ERP_STATUS_INCREMENT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "sales_order": {
+        "column": {
+            "current_erp_status": true
+        }
+    },
+    "sales_order_grid": {
+        "column": {
+            "current_erp_status": true
+        },
+        "index": {
+            "SALES_ORDER_GRID_CURRENT_ERP_STATUS": true
+        }
+    }
+}

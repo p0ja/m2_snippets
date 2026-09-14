@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Vendor\OrderSynchronizer\Api\OrderStatusManagementInterface"
+                type="Vendor\OrderSynchronizer\Model\OrderStatusManagement"/>
+    <preference for="Vendor\OrderSynchronizer\Api\OrderErpStatusRepositoryInterface"
+                type="Vendor\OrderSynchronizer\Model\OrderErpStatusRepository"/>
+    <preference for="Vendor\OrderSynchronizer\Api\Data\OrderErpStatusInterface"
+                type="Vendor\OrderSynchronizer\Model\OrderErpStatus"/>
+    <preference for="Vendor\OrderSynchronizer\Api\Data\OrderErpStatusSearchResultsInterface"
+                type="Magento\Framework\Api\SearchResults"/>
+
+    <!-- Copies sales_order.current_erp_status into sales_order_grid when the order grid row is refreshed -->
+    <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="current_erp_status" xsi:type="string">sales_order.current_erp_status</item>
+            </argument>
+        </arguments>
+    </virtualType>
+</config>

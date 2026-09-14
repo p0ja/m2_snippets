@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="vendor_free_codes" class="Vendor\FreeCodes\Block\Widget\Codes">
+        <label translate="true">Free Code</label>
+        <description translate="true">Button that gives the visitor one code from the free code pool</description>
+        <parameters>
+            <parameter name="title" xsi:type="text" visible="true" sort_order="10">
+                <label translate="true">Title</label>
+            </parameter>
+            <parameter name="note" xsi:type="text" visible="true" sort_order="20">
+                <label translate="true">Note Shown With the Code</label>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>

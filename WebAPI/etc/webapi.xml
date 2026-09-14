@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+    The route requires the module's ACL resource: an admin user or an integration needs "ERP Synchronization
+    Status" in its role. <resource ref="self"/> would accept any customer token, so any shop customer could change
+    the ERP status of every order; <resource ref="anonymous"/> would not even require a token.
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route method="POST" url="/V1/vendor-ordersynchronizer/setOrderStatus">
+        <service class="Vendor\OrderSynchronizer\Api\OrderStatusManagementInterface" method="setOrderStatus"/>
+        <resources>
+            <resource ref="Vendor_OrderSynchronizer::erp_status"/>
+        </resources>
+    </route>
+</routes>
