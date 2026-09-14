@@ -1,5 +1,26 @@
+<?php
+/**
+ * Changed: the template dumped the whole customer data section as JSON (ko.toJSON($data)), a debug output that
+ * puts the logged-in customer's data into the page markup. It now shows only the first name through the KO
+ * "text" binding, which inserts plain text (never HTML). The x-magento-init script declares the "customer"
+ * scope the binding refers to; it was not defined anywhere, so the binding had nothing to render.
+ */
+?>
 <li class="greets" data-bind="scope: 'customer'">
-    <pre data-bind="text: ko.toJSON($data, null, 2)"></pre>
-    <!-- ... -->
+    <!-- ko if: customer().firstname -->
+    <span data-bind="text: customer().firstname"></span>
+    <!-- /ko -->
 </li>
-
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                    "customer": {
+                        "component": "Magento_Customer/js/view/customer"
+                    }
+                }
+            }
+        }
+    }
+</script>

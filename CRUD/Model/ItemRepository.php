@@ -38,7 +38,9 @@ class ItemRepository implements ItemRepositoryInterface
         try {
             $this->objectResourceModel->save($item);
         } catch (Exception $e) {
-            throw new CouldNotSaveException(__('Could not save item'), $e->getMessage());
+            // Changed: the original exception is passed as the previous exception (the second argument must be a
+            // Throwable, a string was a TypeError), so the database error is logged but not shown to the user.
+            throw new CouldNotSaveException(__('Could not save item'), $e);
         }
 
         return $item;
@@ -60,8 +62,10 @@ class ItemRepository implements ItemRepositoryInterface
         try {
             $this->objectResourceModel->delete($item);
         } catch (Exception $e) {
-            $error = PHP_EOL . '[' . $e->getMessage() . ']';
-            throw new CouldNotDeleteException(__('Could not find item.') . $error);
+            // Changed: the database error message is no longer appended to the message shown to the user; it is
+            // kept as the previous exception for the log. Concatenating the Phrase also turned it into a string,
+            // which the exception constructor rejects.
+            throw new CouldNotDeleteException(__('Could not delete item.'), $e);
         }
 
         return true;

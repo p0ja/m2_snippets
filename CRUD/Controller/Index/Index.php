@@ -6,9 +6,15 @@ namespace M2\CRUD\Controller\Index;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\PageFactory;
 
-class Index extends Action
+/**
+ * Changed: HttpGetActionInterface limits the page to GET requests, and the missing ResultInterface import made
+ * the return type resolve to a non-existent class in this namespace (TypeError on every request).
+ */
+class Index extends Action implements HttpGetActionInterface
 {
 
     protected $resultPageFactory;

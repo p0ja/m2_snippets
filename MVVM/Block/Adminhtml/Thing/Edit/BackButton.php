@@ -13,7 +13,8 @@ class BackButton extends GenericButton implements ButtonProviderInterface
 
         return [
             'label' => __('Back'),
-            'on_click' => sprintf("location.href = '%s';", $this->getBackUrl()),
+            // Changed: the URL is escaped for the JavaScript string it is placed in.
+            'on_click' => sprintf("location.href = '%s';", $this->context->getEscaper()->escapeJs($this->getBackUrl())),
             'class' => 'back',
             'sort_order' => 10
         ];

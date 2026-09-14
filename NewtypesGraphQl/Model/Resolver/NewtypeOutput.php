@@ -28,15 +28,22 @@ class NewtypeOutput implements ResolverInterface
     }
 
     /**
+     * Changed: a missing "input" argument is rejected with a GraphQL input error instead of an undefined index
+     * warning and a TypeError, which ended as an internal server error. ?array parameters: implicitly nullable
+     * parameters are deprecated in PHP 8.4, supported by Magento 2.4.8.
+     *
      * @inheritDoc
      */
     public function resolve(
         Field $field,
         $context,
         ResolveInfo $info,
-        array $value = null,
-        array $args = null
+        ?array $value = null,
+        ?array $args = null
     ): array {
+        if (!isset($args['input']) || !is_array($args['input'])) {
+            throw new GraphQlInputException(__('"input" value should be specified.'));
+        }
 
         $data = $this->cleanInput($args['input']);
         $this->validateInput($data);
@@ -65,7 +72,8 @@ class NewtypeOutput implements ResolverInterface
             if (is_array($value)) {
                 $cleanValue = $this->cleanInput($value);
             } else {
-                $cleanValue = $value === null ? '' : trim($value);
+                // Changed: cast to string, trim() on an int or bool input is a TypeError under strict_types.
+                $cleanValue = $value === null ? '' : trim((string)$value);
             }
 
             $values[$field] = $cleanValue;
@@ -81,7 +89,8 @@ class NewtypeOutput implements ResolverInterface
      */
     public function validateInput(array $input): void
     {
-        if (!$this->isValidDate($input[self::DATE_PARAM])) {
+        // Changed: a missing date is treated as invalid instead of raising an undefined index warning.
+        if (!is_string($input[self::DATE_PARAM] ?? null) || !$this->isValidDate($input[self::DATE_PARAM])) {
             throw new GraphQlInputException(
                 __('The Date format is invalid. Verify the Date value and try again.')
             );

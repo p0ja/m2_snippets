@@ -41,13 +41,25 @@ class AddAttributesToUiDataProvider
 
         $attribute = $this->attributeRepository->get('catalog_category', 'name');
 
-        $result->getSelect()->joinLeft(
-            ['devgridname' => $attribute->getBackendTable()],
-            "devgridname." . $column . " = main_table." . $column . " AND devgridname.attribute_id = " . $attribute->getAttributeId(),
-            ['name' => "devgridname.value"]
+        // Changed: the join condition and the filter are built with quoteIdentifier() and quoteInto() instead of
+        // string concatenation. The values are not user input today, but concatenated SQL becomes an injection
+        // point as soon as someone copies the snippet with a request value. The double-quoted "B%" literal also
+        // broke on MySQL servers running with ANSI_QUOTES.
+        $connection = $result->getConnection();
+        $joinCondition = sprintf(
+            '%s = %s AND %s',
+            $connection->quoteIdentifier('devgridname.' . $column),
+            $connection->quoteIdentifier('main_table.' . $column),
+            $connection->quoteInto('devgridname.attribute_id = ?', (int)$attribute->getAttributeId())
         );
 
-        $result->getSelect()->where('devgridname.value LIKE "B%"');
+        $result->getSelect()->joinLeft(
+            ['devgridname' => $attribute->getBackendTable()],
+            $joinCondition,
+            ['name' => 'devgridname.value']
+        );
+
+        $result->getSelect()->where('devgridname.value LIKE ?', 'B%');
 
         return $result;
     }

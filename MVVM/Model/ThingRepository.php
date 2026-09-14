@@ -39,7 +39,9 @@ class ThingRepository implements ThingRepositoryInterface
         try {
             $this->objectResourceModel->save($object);
         } catch (Exception $e) {
-            throw new CouldNotSaveException(__('Error saving object') . ': ' . $e->getMessage());
+            // Changed: the database error text is no longer shown in the admin message; the original exception
+            // is passed on for the log. Concatenating the Phrase also produced a string the constructor rejects.
+            throw new CouldNotSaveException(__('Error saving object'), $e);
         }
 
         return $object;
@@ -58,7 +60,8 @@ class ThingRepository implements ThingRepositoryInterface
         try {
             $this->objectResourceModel->delete($object);
         } catch (Exception $e) {
-            throw new CouldNotDeleteException(__('Error rmoving object') . ': ' . $e->getMessage());
+            // Changed: see save(); the database error text stays in the previous exception.
+            throw new CouldNotDeleteException(__('Error removing object'), $e);
         }
 
         return true;

@@ -2,7 +2,8 @@
 
 namespace M2\CRUD\Command;
 
-use M2\CRUD\Services\GetFilteredProductList;
+// Changed: the service namespace is M2\CRUD\Service, matching its directory.
+use M2\CRUD\Service\GetFilteredProductList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,11 +15,11 @@ class ListSku extends Command
     private const ARG_SKU_PART = 'skuLike';
 
     /**
-     * @throws LocalizedException
+     * Changed: ?string, implicitly nullable parameters are deprecated in PHP 8.4, supported by Magento 2.4.8.
      */
     public function __construct(
         private readonly GetFilteredProductList $getFilteredProductList,
-        string $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
     }

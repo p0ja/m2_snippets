@@ -1,4 +1,13 @@
+<?php
+/**
+ * Changed: uses the $block and $escaper variables Magento 2.4 passes to templates. $this->escapeHtml() is
+ * deprecated in templates, and the name comes from the request, so it must stay escaped.
+ *
+ * @var \M2\MVVM\Block\Main $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
 <h1>content static text</h1>
-<h2><?php echo $this->escapeHtml($this->getMessage()); ?></h2>
+<h2><?= $escaper->escapeHtml($block->getMessage()) ?></h2>
 
-<div><?php echo $this->escapeHtml($this->getName()); ?></div>
+<div><?= $escaper->escapeHtml($block->getName()) ?></div>

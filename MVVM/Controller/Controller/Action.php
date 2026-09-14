@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace M2\MVVM\Controller\Controller;
 
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\ActionInterface;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\PageFactory;
 
-class Action implements ActionInterface
+// Changed: HttpGetActionInterface (extends ActionInterface) limits this page to GET requests.
+class Action implements HttpGetActionInterface
 {
     /**
      * @param Context $context
@@ -28,8 +29,7 @@ class Action implements ActionInterface
      */
     public function execute(): ResultInterface
     {
-        var_dump(__METHOD__);
-
+        // Removed: var_dump(__METHOD__) printed debug output before the page, on a public frontend route.
         return $this->pageFactory->create();
     }
 }

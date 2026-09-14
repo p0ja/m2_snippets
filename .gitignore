@@ -43,3 +43,6 @@
 /var/package/*
 !/var/package/*.xml
 
+# Added: local IDE settings, not part of the snippets
+/.idea/
+

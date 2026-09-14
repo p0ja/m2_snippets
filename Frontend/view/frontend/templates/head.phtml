@@ -1,9 +1,13 @@
 <?php
-    $assetRepository = $this->assetRepository;
-    $assetJS         = $assetRepository->createAsset('M2_Frontend::test.js');
-    //$assetCSS        = $assetRepository->createAsset('M2_Frontend::test.css');
+/**
+ * Changed: the asset URL comes from the block method and is escaped with escapeUrl() before it is printed into
+ * the src attribute.
+ *
+ * @var \M2\Frontend\Block\Head $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
 ?>
 
 <!-- Frontend Head -->
-<script src="<?php echo $assetJS->getUrl(); ?>"></script>
-<!--<script src="<?php //echo $assetCSS->getUrl(); ?>"></script>-->
+<script src="<?= $escaper->escapeUrl($block->getAssetUrl('M2_Frontend::test.js')) ?>"></script>
+<!--<link rel="stylesheet" href="<?php //= $escaper->escapeUrl($block->getAssetUrl('M2_Frontend::test.css')) ?>">-->

@@ -1,47 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace M2\CRUD\Block;
 
-use M2\CRUD\Model\ItemFactory;
-use M2\CRUD\Model\ItemRepository;
-use Magento\Framework\Exception\CouldNotSaveException;
+use M2\CRUD\Api\ItemRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Psr\Log\LoggerInterface;
 
+/**
+ * Changed: this block used to save a new item in _prepareLayout() and var_dump() every stored row, so each
+ * anonymous visit of /m2_crud/index/index wrote to the database and printed the whole table into the page.
+ * A block only reads; writes belong to POST controllers, CLI commands or data patches. The template now
+ * prints a limited, escaped list loaded through the repository.
+ */
 class Main extends Template
 {
+    private const ITEMS_LIMIT = 20;
+
     /**
      * @param Context $context
-     * @param ItemFactory $itemFactory
-     * @param ItemRepository $itemRepository
-     * @param LoggerInterface $logger
+     * @param ItemRepositoryInterface $itemRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param array $data
      */
     public function __construct(
-        protected Context $context,
-        private readonly ItemFactory $itemFactory,
-        private readonly ItemRepository $itemRepository,
-        private readonly LoggerInterface $logger,
+        Context $context,
+        private readonly ItemRepositoryInterface $itemRepository,
+        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
+        array $data = []
     ) {
-        parent::__construct($context);
+        parent::__construct($context, $data);
     }
 
-    public function _prepareLayout()
+    /**
+     * Items for the template, limited so the page never loads the whole table.
+     *
+     * @return \M2\CRUD\Api\Data\ItemInterface[]
+     */
+    public function getItems(): array
     {
-        $item = $this->itemFactory->create();
-        $item->setData('item_text', 'Finish my Magento article');
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->setPageSize(self::ITEMS_LIMIT)
+            ->setCurrentPage(1)
+            ->create();
 
-        try {
-            $this->itemRepository->save($item);
-        } catch (CouldNotSaveException $e) {
-            $this->logger->critical('Problem saving item: ' . $e->getMessage());
-        }
-
-        $collection = $item->getCollection();
-
-        foreach ($collection as $item) {
-            var_dump('Item ID: ' . $item->getId());
-            var_dump($item->getData());
-        }
+        return $this->itemRepository->getList($searchCriteria)->getItems();
     }
 }

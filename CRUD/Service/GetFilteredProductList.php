@@ -2,44 +2,49 @@
 
 declare(strict_types=1);
 
-namespace M2\CRUD\Services;
+// Changed: the namespace said "Services" while the directory is "Service", so the class could not be autoloaded.
+namespace M2\CRUD\Service;
 
-use M2\CRUD\Model\ItemRepository;
-use Magento\Framework\Api\Filter;
+use M2\CRUD\Api\Data\ItemInterface;
+use M2\CRUD\Api\ItemRepositoryInterface;
 use Magento\Framework\Api\FilterBuilder;
-use Magento\Framework\Api\Search\FilterGroup;
-use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 
+/**
+ * Changed: dependencies are injected instead of being created through ObjectManagerInterface. Direct object
+ * manager use hides dependencies, bypasses DI preferences and plugins, and is rejected by the Magento coding
+ * standard. SearchCriteriaBuilder replaces the hand-built FilterGroup.
+ */
 class GetFilteredProductList
 {
     /**
-     * @param ObjectManagerInterface $objectManager
+     * @param FilterBuilder $filterBuilder
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param ItemRepositoryInterface $itemRepository
      */
     public function __construct(
-        private readonly ObjectManagerInterface $objectManager,
-    ){
+        private readonly FilterBuilder $filterBuilder,
+        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
+        private readonly ItemRepositoryInterface $itemRepository,
+    ) {
     }
 
     /**
-     * @param string $pattern
-     * @return array
+     * @param string $pattern SQL LIKE pattern for the SKU, the value is bound by the collection
+     * @return ItemInterface[]
      */
     public function execute(string $pattern): array
     {
-        $filterBuilder = $this->objectManager->create(FilterBuilder::class);
-        $filterBuilder->setField('item_sku')->setConditionType('like')->setValue($pattern);
-        $filter = $filterBuilder->create();
+        $filter = $this->filterBuilder
+            ->setField('item_sku')
+            ->setConditionType('like')
+            ->setValue($pattern)
+            ->create();
 
-        $filterGroup = $this->objectManager->create(FilterGroup::class);
-        $filterGroup->setData('filters', [$filter]);
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilters([$filter])
+            ->create();
 
-        $searchCriteria = $this->objectManager->create(SearchCriteriaInterface::class);
-        $searchCriteria->setFilterGroups([$filterGroup]);
-
-        $itemRepository = $this->objectManager->get(ItemRepository::class);
-        $result = $itemRepository->getList($searchCriteria);
-
-        return $result->getItems();
+        return $this->itemRepository->getList($searchCriteria)->getItems();
     }
 }
