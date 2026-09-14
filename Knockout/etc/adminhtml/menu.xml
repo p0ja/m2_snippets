@@ -2,11 +2,13 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
+        <!-- Changed: the action uses the lowercase route id from etc/adminhtml/routes.xml -->
         <add
                 id="M2_Knockout::M2_knockout_menu"
                 resource="M2_Knockout::menu_1"
                 title="Valid Ui Component"
-                action="M2_knockout/index/index"
+                translate="title"
+                action="m2_knockout/index/index"
                 module="M2_Knockout"
                 sortOrder="1"
                 parent="Magento_Backend::system_other_settings"

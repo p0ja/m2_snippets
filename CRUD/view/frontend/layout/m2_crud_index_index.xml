@@ -1,7 +1,15 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <referenceContainer name="content">
-        <block template="content.phtml" class="M2\CRUD\Block\Main" name="M2_crud_block_main"/>
-    </referenceContainer>
+    <body>
+        <referenceContainer name="content">
+            <!-- Changed: a generic template block with a view model instead of the custom M2\CRUD\Block\Main class -->
+            <block class="Magento\Framework\View\Element\Template" name="m2_crud_item_list"
+                   template="M2_CRUD::content.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">M2\CRUD\ViewModel\ItemList</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
 </page>

@@ -1,1 +1,22 @@
-<h1>content</h1>
+<?php
+/**
+ * Lists the items provided by the M2\CRUD\ViewModel\ItemList view model.
+ *
+ * Changed: reads the view model passed in layout XML and the ItemInterface getters; every value is escaped with
+ * $escaper, which Magento 2.4 passes to each template.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \M2\CRUD\ViewModel\ItemList $viewModel
+ */
+$viewModel = $block->getData('view_model');
+?>
+<h1><?= $escaper->escapeHtml(__('Items')) ?></h1>
+<ul>
+    <?php foreach ($viewModel->getItems() as $item): ?>
+        <li>
+            <?= $escaper->escapeHtml($item->getSku()) ?>
+            &ndash; <?= $escaper->escapeHtml($item->getTitle()) ?>
+        </li>
+    <?php endforeach; ?>
+</ul>

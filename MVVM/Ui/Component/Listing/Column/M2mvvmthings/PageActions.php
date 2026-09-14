@@ -1,31 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace M2\MVVM\Ui\Component\Listing\Column\M2mvvmthings;
 
+use M2\MVVM\Api\Data\ThingInterface;
 use Magento\Ui\Component\Listing\Columns\Column;
 
 class PageActions extends Column
 {
-    public function prepareDataSource(array $dataSource)
+    /**
+     * @inheritDoc
+     */
+    public function prepareDataSource(array $dataSource): array
     {
-        if (isset($dataSource["data"]["items"])) {
-            foreach ($dataSource["data"]["items"] as & $item) {
-                $name = $this->getData("name");
-                $id = "X";
+        // Changed: the route id is lowercase like etc/adminhtml/routes.xml ("M2_mvvm_things" did not match on
+        // case-sensitive routers), and rows without an id get no link instead of an edit URL for the id "X".
 
-                if (isset($item["thing_id"])) {
-                    $id = $item["thing_id"];
-                }
-                $item[$name]["view"] = [
-                    "href" => $this->getContext()->getUrl(
-                        "M2_mvvm_things/thing/edit",
-                        [
-                            "thing_id" => $id,
-                        ]
-                    ),
-                    "label" => __("Edit")
-                ];
+        if (!isset($dataSource['data']['items'])) {
+            return $dataSource;
+        }
+
+        $name = $this->getData('name');
+        foreach ($dataSource['data']['items'] as &$item) {
+            if (empty($item[ThingInterface::THING_ID])) {
+                continue;
             }
+
+            $item[$name]['edit'] = [
+                'href' => $this->getContext()->getUrl(
+                    'm2_mvvm_things/thing/edit',
+                    ['thing_id' => $item[ThingInterface::THING_ID]]
+                ),
+                'label' => __('Edit'),
+            ];
         }
 
         return $dataSource;

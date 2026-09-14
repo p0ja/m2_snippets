@@ -1,9 +1,0 @@
-<?php
-    $assetRepository = $this->assetRepository;
-    $assetJS         = $assetRepository->createAsset('M2_Frontend::test.js');
-    //$assetCSS        = $assetRepository->createAsset('M2_Frontend::test.css');
-?>
-
-<!-- Frontend Head -->
-<script src="<?php echo $assetJS->getUrl(); ?>"></script>
-<!--<script src="<?php //echo $assetCSS->getUrl(); ?>"></script>-->

@@ -8,6 +8,11 @@ use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;
 
 class SaveAndContinueButton extends GenericButton implements ButtonProviderInterface
 {
+    /**
+     * Get button data
+     *
+     * @return array
+     */
     public function getButtonData(): array
     {
         return [

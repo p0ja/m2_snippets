@@ -1,32 +1,32 @@
-<!--@subject {{trans "Custom Email template from %store_name" store_name=$store.getFrontendName()}} @-->
+<!--@subject {{trans "Custom Email template from %store_name" store_name=$store.frontend_name}} @-->
 <!--@vars {
-"var name":"",
+"var name":"Name",
 "var message_1":"Custom Message 1",
-"var message_2":"Custom Message 2"
-"var store":"Store Data"
+"var message_2":"Custom Message 2",
+"var store.frontend_name":"Store Name"
 } @-->
+<!--
+    Changed: the template used Twig-like syntax ({% if %}, {{"Hello . $name}}) that Magento's email filter does not
+    understand, the @vars JSON was missing a comma, and $store.getFrontendName() is a method call that the strict
+    template filter (2.3.4+) rejects. It now uses {{depend}}, {{trans}} with parameters (escaped by default) and
+    {{var}}, like the core email templates.
+-->
 
 {{template config_path="design/email/header_template"}}
 
-<h2>{{ $store.frontend_name }}</h2>
+<h2>{{var store.frontend_name}}</h2>
 
-{% if ($name) %}
-    <h1>{{"Hello . $name}}</h1>;
-{% else %}
-    <h1>Hello</h1>
-{% endif %}
+{{depend name}}
+<h1>{{trans "Hello %name" name=$name}}</h1>
+{{/depend}}
 
 <table>
     <tr class="email-info">
         <td>
-
-            <div>{{trans $message_1}}</div>
-
-            <div>{{trans $message_2}}</div>
-
+            <div>{{var message_1}}</div>
+            <div>{{var message_2}}</div>
         </td>
     </tr>
 </table>
 
 {{template config_path="design/email/footer_template"}}
-

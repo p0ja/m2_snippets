@@ -1,4 +1,15 @@
-<h1>content static text</h1>
-<h2><?php echo $this->escapeHtml($this->getMessage()); ?></h2>
+<?php
+/**
+ * Changed: reads the Greeting view model passed in layout XML; output is escaped with $escaper, the name comes
+ * from the request.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \M2\MVVM\ViewModel\Greeting $viewModel
+ */
+$viewModel = $block->getData('view_model');
+?>
+<h1><?= $escaper->escapeHtml(__('content static text')) ?></h1>
+<h2><?= $escaper->escapeHtml($viewModel->getMessage()) ?></h2>
 
-<div><?php echo $this->escapeHtml($this->getName()); ?></div>
+<div><?= $escaper->escapeHtml($viewModel->getName()) ?></div>

@@ -10,6 +10,8 @@ use Magento\Framework\App\CacheInterface;
 class Process5minTags
 {
     /**
+     * Constructor
+     *
      * @param CacheInterface $cache
      */
     public function __construct(
@@ -18,13 +20,16 @@ class Process5minTags
     }
 
     /**
+     * Cleans the cache entries tagged with the tags listed in ClearTagsList::TAGS_EVERY_5MIN.
+     *
+     * Changed: removed the hard-coded cache key "customer_rma_list__0_2219-009-034-004-0004", which looked like an
+     * identifier copied from a real shop. It was also passed to load(), which returns the cached value, not a tag,
+     * so the value (or false) was added to the tag list. Tags to clean belong in ClearTagsList.
+     *
      * @return bool
      */
     public function cleanCacheByTag(): bool
     {
-        $tags = ClearTagsList::TAGS_EVERY_5MIN;
-        $tags[] = $this->cache->load('customer_rma_list__0_2219-009-034-004-0004');
-
-        return $this->cache->clean($tags);
+        return $this->cache->clean(ClearTagsList::TAGS_EVERY_5MIN);
     }
 }

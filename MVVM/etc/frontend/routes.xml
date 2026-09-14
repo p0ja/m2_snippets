@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
+<!-- Changed: urn schema location instead of a relative path into lib/internal -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/App/etc/routes.xsd">
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
         <route id="m2_mvvm" frontName="m2_mvvm">
             <module name="M2_MVVM"/>

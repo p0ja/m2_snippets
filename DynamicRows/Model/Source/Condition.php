@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace Vendor\DynamicRows\Model\Source;
 
-use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Data\OptionSourceInterface;
 
-class Condition implements ArrayInterface
+/**
+ * Changed: implements OptionSourceInterface; Magento\Framework\Option\ArrayInterface is deprecated. The labels are
+ * translatable phrases.
+ */
+class Condition implements OptionSourceInterface
 {
-   public function toOptionArray()
-   {
-       $conditions[] = [
-           'label' => 'GreaterThan',
-           'value' => 'gt',
-       ];
+    public const GREATER_THAN = 'gt';
+    public const EQUAL = 'eq';
 
-       $conditions[] = [
-           'label' => 'Equal',
-           'value' => 'eq',
-       ];
-
-       return $conditions;
-   }
+    /**
+     * @inheritDoc
+     */
+    public function toOptionArray(): array
+    {
+        return [
+           ['label' => __('GreaterThan'), 'value' => self::GREATER_THAN],
+           ['label' => __('Equal'), 'value' => self::EQUAL],
+        ];
+    }
 }

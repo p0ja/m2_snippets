@@ -1,33 +1,27 @@
+<?xml version="1.0"?>
+<!--
+    Changed: rewritten to the <settings> syntax (Magento 2.2+) validated by ui_configuration.xsd. The data source
+    has an <aclResource> like the page controller.
+-->
 <container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
-    <argument name="data" xsi:type="array">
-        <item name="template" xsi:type="string">templates/m2_simple_valid/default</item>
-    </argument>
-
+           xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd"
+           template="templates/m2_simple_valid/default">
     <dataSource name="m2_simple_valid_data_source">
-        <argument name="dataProvider" xsi:type="configurableObject">
-            <!-- the PHP class that implements a data provider -->
-            <argument name="class" xsi:type="string">M2\Knockout\Model\DataProvider</argument>
-
-            <!-- redundant with the `dataSource` name -->
-            <argument name="name" xsi:type="string">m2_simple_valid_data_source</argument>
-
-            <!-- required: means ui components are meant to work with models -->
-            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
-
-            <!-- required: means ui components are meant to work with URL passing -->
-            <argument name="requestFieldName" xsi:type="string">id</argument>
-        </argument>
+        <aclResource>M2_Knockout::menu_1</aclResource>
+        <!-- the PHP class that implements the data provider; name repeats the dataSource name -->
+        <dataProvider class="M2\Knockout\Model\DataProvider" name="m2_simple_valid_data_source">
+            <settings>
+                <!-- UI components are meant to work with URL parameters -->
+                <requestFieldName>id</requestFieldName>
+                <!-- UI components are meant to work with models -->
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
     </dataSource>
 
     <!--<htmlContent name="first_content">
-        <argument name="block" xsi:type="object">M2\Knockout\Block\Adminhtml\Example</argument>
+        <block class="M2\Knockout\Block\Adminhtml\Example" name="m2_knockout_example"/>
     </htmlContent> -->
-    <htmlContent name="second_content" class="M2\Knockout\Ui\Component\Simple">
-        <argument name="data" xsi:type="array">
-            <item name="config" xsi:type="array">
-                <item name="component" xsi:type="string">M2_Knockout/js/m2_simple_component</item>
-            </item>
-        </argument>
-    </htmlContent>
+    <htmlContent name="second_content" class="M2\Knockout\Ui\Component\Simple"
+                 component="M2_Knockout/js/m2_simple_component"/>
 </container>

@@ -8,10 +8,16 @@ use Magento\Ui\Component\AbstractComponent;
 
 class Simple extends AbstractComponent
 {
-    const NAME = 'html_content_m2_simple_valid';
+    public const NAME = 'html_content_m2_simple_valid';
 
-    public function getComponentName()
+    /**
+     * @inheritDoc
+     */
+    public function getComponentName(): string
     {
-        return self::getName();
+        // Changed: returned self::getName(), a static call of an instance method, which is an Error in PHP 8. The
+        // component name is the NAME constant.
+
+        return static::NAME;
     }
 }

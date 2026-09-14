@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Frontend Project</title>
-        <!-- data-main attribute tells require.js to load
-             scripts/main.js after require.js loads. -->
-        <script data-main="scripts/main" src="../scripts/require.js"></script>
-    </head>
-    <body>
-        <h1>Frontend Project</h1>
-    </body>
-</html>
+<?php
+/**
+ * Changed: the template printed a complete HTML document (doctype, head, body) inside a page block and loaded a
+ * standalone RequireJS copy with a relative URL. Magento already provides RequireJS, so the example now starts
+ * its AMD module with data-mage-init on an element of the page.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
+<h1><?= $escaper->escapeHtml(__('Frontend Project')) ?></h1>
+<p data-mage-init='{"M2_Frontend/js/main": {}}'></p>

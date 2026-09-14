@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace M2\CRUD\Model\ResourceModel\Item;
 
 use M2\CRUD\Model\Item;
@@ -8,7 +10,10 @@ use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
 class Collection extends AbstractCollection
 {
-    protected function _construct() // phpcs:ignore PSR2.Methods.MethodDeclaration
+    /**
+     * @inheritDoc
+     */
+    protected function _construct()
     {
         $this->_init(Item::class, ItemResource::class);
     }

@@ -1,30 +1,26 @@
-define(['jquery'], function (jQuery) {
+/**
+ * Mixin for the mage/dropdown widget (registered in view/base/requirejs-config.js).
+ *
+ * Changed: removed alert(). The mixin is registered for the base area, so the alert blocked every admin and
+ * storefront page that loads mage/dropdown; console.log() shows the same hook without interrupting the page.
+ */
+define(['jquery'], function ($) {
+    'use strict';
+
     return function (originalWidget) {
+        console.log('Our mixin is hooked up');
 
-        alert("Our mixin is hooked up.");
-        console.log("Our mixin is hooked up");
+        // Redefine the named widget, using the original widget definition as the parent.
+        $.widget('mage.dropdownDialog', $.mage.dropdownDialog, {
+            /**
+             * New code runs first, then the parent open() keeps the original behaviour.
+             */
+            open: function () {
+                console.log('I opened a dropdown!');
 
-        jQuery.widget(
-            'mage.dropdownDialog',              //named widget we're redefining
-
-            //jQuery.mage.dropdownDialog
-            jQuery['mage']['dropdownDialog'],   //widget definition to use as
-            //a "parent" definition -- in
-            //this case the original widget
-            //definition, accessed using
-            //bracket syntax instead of
-            //dot syntax
-
-            {                                   //the new methods
-                open: function () {
-                    //new code here
-                    console.log("I opened a dropdown!");
-
-                    //call parent open for original functionality
-                    return this._super();
-
-                }
-            });
+                return this._super();
+            }
+        });
 
         return originalWidget;
     };

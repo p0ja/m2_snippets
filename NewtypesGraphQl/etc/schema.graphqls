@@ -1,34 +1,40 @@
-interface NewtypeInterface  @typeResolver(class: "Vendor\\NewtypeGraphQl\\Model\\NewtypeTypeResolver") @doc(description:"Contains information about newtypes.") {
-    name: String! @doc(description: "The name of the newtype")
-    content: String! @doc(description: "The content of the newtype")
-    date_from: String! @doc (description: "Start date")
-    date_to: String! @doc (description: "End date")
-    url: String @doc(description: "The part of the URL that newtype links to")
+# Changed:
+# - the type resolver class name was Vendor\NewtypeGraphQl\Model\NewtypeTypeResolver, which does not exist
+#   (the class is Vendor\NewtypesGraphQl\Model\NewtypesTypeResolver), so the schema could not be built;
+# - @doc descriptions describe the fields they belong to;
+# - getNewtypes has @cache with a cache identity, so Magento_GraphQlCache can cache the response and clean it by tag.
+
+interface NewtypeInterface @typeResolver(class: "Vendor\\NewtypesGraphQl\\Model\\NewtypesTypeResolver") @doc(description: "Contains information about newtypes.") {
+    name: String! @doc(description: "The name of the newtype.")
+    content: String! @doc(description: "The content of the newtype.")
+    date_from: String! @doc(description: "The start date.")
+    date_to: String! @doc(description: "The end date.")
+    url: String @doc(description: "The part of the URL that the newtype links to.")
 }
 
-type Newtype implements NewtypeInterface @doc(description: "Contains the list of newtypes.") {
-    priority: String! @doc(description: "The content of the newtype") @resolver(class: "Vendor\\NewtypesGraphQl\\Model\\Resolver\\PriorityResolver")
-    category: [CategoryData] @doc(description: "The stock availability of the products.") @resolver(class: "Vendor\\NewtypesGraphQl\\Model\\Resolver\\CategoryResolver")
+type Newtype implements NewtypeInterface @doc(description: "A newtype.") {
+    priority: String! @doc(description: "The priority name of the newtype.") @resolver(class: "Vendor\\NewtypesGraphQl\\Model\\Resolver\\PriorityResolver")
+    category: [CategoryData] @doc(description: "The category the newtype belongs to, when it is active in the current store.") @resolver(class: "Vendor\\NewtypesGraphQl\\Model\\Resolver\\CategoryResolver")
 }
 
-type CategoryData {
-    uid: String
-    name: String
-    description: String
-    path: String
+type CategoryData @doc(description: "Category details of a newtype.") {
+    uid: String @doc(description: "The unique ID of the category.")
+    name: String @doc(description: "The category name.")
+    description: String @doc(description: "The category description.")
+    path: String @doc(description: "The URL path of the category.")
 }
 
 type Query {
     getNewtypes(
-        input: NewtypeInput! @doc(description: "An input object that defines shopper information.")
-    ): NewtypeOutput @doc(description: "Returns newtypes data information.")  @resolver(class: "Vendor\\NewtypesGraphQl\\Model\\Resolver\\NewtypeOutput")
+        input: NewtypeInput! @doc(description: "The filters for the newtypes to return.")
+    ): NewtypeOutput @doc(description: "Returns the newtypes matching the input.") @resolver(class: "Vendor\\NewtypesGraphQl\\Model\\Resolver\\NewtypeOutput") @cache(cacheIdentity: "Vendor\\NewtypesGraphQl\\Model\\Resolver\\Newtypes\\Identity")
 }
 
-input NewtypeInput {
-    store_id: FilterEqualTypeInput @doc(description: "Filter by store id.")
-    date: String! @doc(description: "Date for newtype to display.")
+input NewtypeInput @doc(description: "Filters for the getNewtypes query.") {
+    store_id: FilterEqualTypeInput @doc(description: "Filter by store ID.")
+    date: String! @doc(description: "The date the newtypes are displayed on.")
 }
 
-type NewtypeOutput {
+type NewtypeOutput @doc(description: "The result of the getNewtypes query.") {
     newtypes: [Newtype] @doc(description: "Newtype details.")
 }

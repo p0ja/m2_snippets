@@ -1,0 +1,17 @@
+{
+    "name": "dev/module-grid",
+    "description": "Magento 2 snippet: admin UI listing of categories with mass delete and an attribute join plugin",
+    "type": "magento2-module",
+    "require": {
+        "php": "~8.3.0||~8.4.0",
+        "magento/framework": "103.0.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dev\\Grid\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    }
+}

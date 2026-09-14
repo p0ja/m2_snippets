@@ -19,8 +19,9 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Your Comments]]></comment>
                 </field>
+                <!-- Changed: showInStore was "3"; the attribute is a 0/1 flag -->
                 <field id="sender" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="3" canRestore="1">
+                       showInStore="1" canRestore="1">
                     <label>Product failed email sender</label>
                     <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
                     <depends>

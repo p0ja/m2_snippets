@@ -8,6 +8,9 @@ use Magento\Backend\Block\Template;
 
 class Example extends Template
 {
+    /**
+     * To html
+     */
     public function toHtml()
     {
         return '<h1>PHP Block Rendered in JS</h1>';

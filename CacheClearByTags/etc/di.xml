@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Changed: the urn schema location replaces a relative path into lib/internal, which only resolved from
+    app/code/Vendor/CacheClearByTags, and the class name of the object item is on one line (the surrounding
+    whitespace became part of the class name).
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="vendor_clear_cache_by_tags" xsi:type="object">
-                    Vendor\CacheClearByTags\Command\RunClearCache
-                </item>
+                <item name="vendor_clear_cache_by_tags" xsi:type="object">Vendor\CacheClearByTags\Command\RunClearCache</item>
             </argument>
         </arguments>
     </type>

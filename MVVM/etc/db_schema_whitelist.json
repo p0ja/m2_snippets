@@ -1,0 +1,14 @@
+{
+    "m2_mvvm_thing": {
+        "column": {
+            "thing_id": true,
+            "title": true,
+            "creation_time": true,
+            "update_time": true,
+            "is_active": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

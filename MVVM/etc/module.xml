@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
+<!--
+    Changed: setup_version removed (declarative schema), and <sequence> lists the modules whose classes, layouts and
+    UI components this module uses, so Magento loads them first.
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="M2_MVVM" setup_version="0.0.1"/>
+    <module name="M2_MVVM">
+        <sequence>
+            <module name="Magento_Backend"/>
+            <module name="Magento_Ui"/>
+        </sequence>
+    </module>
 </config>

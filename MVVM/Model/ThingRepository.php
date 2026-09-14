@@ -6,146 +6,110 @@ namespace M2\MVVM\Model;
 
 use Exception;
 use M2\MVVM\Api\Data\ThingInterface;
+use M2\MVVM\Api\Data\ThingSearchResultsInterface;
+use M2\MVVM\Api\Data\ThingSearchResultsInterfaceFactory;
 use M2\MVVM\Api\ThingRepositoryInterface;
-use M2\MVVM\Model\ResourceModel\Thing as ObjectResourceModel;
+use M2\MVVM\Model\ResourceModel\Thing as ThingResource;
 use M2\MVVM\Model\ResourceModel\Thing\CollectionFactory;
+use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Api\SearchResultsInterfaceFactory;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
+/**
+ * Changed:
+ * - getList() returns ThingSearchResultsInterface (the old array return type was a TypeError) and applies the
+ *   criteria with CollectionProcessorInterface; the removed filter/sort helpers referenced SortOrder without
+ *   importing it;
+ * - getById() and deleteById() take int ids, as the interface declares.
+ */
 class ThingRepository implements ThingRepositoryInterface
 {
     /**
-     * @param ThingFactory $objectFactory
-     * @param ObjectResourceModel $objectResourceModel
+     * Constructor
+     *
+     * @param ThingFactory $thingFactory
+     * @param ThingResource $thingResource
      * @param CollectionFactory $collectionFactory
-     * @param SearchResultsInterfaceFactory $searchResultsFactory
+     * @param ThingSearchResultsInterfaceFactory $searchResultsFactory
+     * @param CollectionProcessorInterface $collectionProcessor
      */
     public function __construct(
-        private readonly ThingFactory $objectFactory,
-        private readonly ObjectResourceModel $objectResourceModel,
+        private readonly ThingFactory $thingFactory,
+        private readonly ThingResource $thingResource,
         private readonly CollectionFactory $collectionFactory,
-        private readonly SearchResultsInterfaceFactory $searchResultsFactory
+        private readonly ThingSearchResultsInterfaceFactory $searchResultsFactory,
+        private readonly CollectionProcessorInterface $collectionProcessor
     ) {
     }
 
     /**
-     * @throws CouldNotSaveException
+     * @inheritDoc
      */
-    public function save(ThingInterface $object): ThingInterface
+    public function save(ThingInterface $thing): ThingInterface
     {
         try {
-            $this->objectResourceModel->save($object);
+            $this->thingResource->save($thing);
         } catch (Exception $e) {
-            throw new CouldNotSaveException(__('Error saving object') . ': ' . $e->getMessage());
+            // The database error text is not shown in the admin message; the original exception is kept for the log.
+            throw new CouldNotSaveException(__('Error saving object'), $e);
         }
 
-        return $object;
-    }
-
-    public function deleteById($id): bool
-    {
-        return $this->delete($this->getById($id));
+        return $thing;
     }
 
     /**
-     * @throws CouldNotDeleteException
+     * @inheritDoc
      */
-    public function delete(ThingInterface $object): bool
+    public function getById(int $id): ThingInterface
+    {
+        $thing = $this->thingFactory->create();
+        $this->thingResource->load($thing, $id);
+
+        if (!$thing->getId()) {
+            throw new NoSuchEntityException(__('Object with id "%1" does not exist.', $id));
+        }
+
+        return $thing;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getList(SearchCriteriaInterface $criteria): ThingSearchResultsInterface
+    {
+        $collection = $this->collectionFactory->create();
+        $this->collectionProcessor->process($criteria, $collection);
+
+        $searchResults = $this->searchResultsFactory->create();
+        $searchResults->setSearchCriteria($criteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(ThingInterface $thing): bool
     {
         try {
-            $this->objectResourceModel->delete($object);
+            $this->thingResource->delete($thing);
         } catch (Exception $e) {
-            throw new CouldNotDeleteException(__('Error rmoving object') . ': ' . $e->getMessage());
+            // See save(); the database error text stays in the previous exception.
+            throw new CouldNotDeleteException(__('Error removing object'), $e);
         }
 
         return true;
     }
 
     /**
-     * @throws NoSuchEntityException
+     * @inheritDoc
      */
-    public function getById($id): ThingInterface
+    public function deleteById(int $id): bool
     {
-        $object = $this->objectFactory->create();
-        $this->objectResourceModel->load($object, $id);
-
-        if (!$object->getId()) {
-            throw new NoSuchEntityException(__('Object with id "%1" does not exist.', $id));
-        }
-
-        return $object;
-    }
-
-    /**
-     * @returns [] ThingInterface
-     */
-    public function getList(SearchCriteriaInterface $criteria): array
-    {
-        $searchResults = $this->searchResultsFactory->create();
-        $searchResults->setSearchCriteria($criteria);
-        $collection = $this->collectionFactory->create();
-
-        $this->addFilterCriteria($criteria, $collection);
-        $searchResults->setTotalCount($collection->getSize());
-        $this->addSortOrdersCriteria($criteria, $collection);
-
-        $collection->setCurPage($criteria->getCurrentPage());
-        $collection->setPageSize($criteria->getPageSize());
-        $objects = [];
-
-        foreach ($collection as $objectModel) {
-            $objects[] = $objectModel;
-        }
-
-        $searchResults->setItems($objects);
-
-        return $searchResults;
-    }
-
-    /**
-     * @param SearchCriteriaInterface $criteria
-     * @param $collection
-     * @return void
-     */
-    private function addFilterCriteria(SearchCriteriaInterface $criteria, $collection): void
-    {
-        foreach ($criteria->getFilterGroups() as $filterGroup) {
-            $fields = [];
-            $conditions = [];
-
-            foreach ($filterGroup->getFilters() as $filter) {
-                $condition = $filter->getConditionType() ?: 'eq';
-                $fields[] = $filter->getField();
-                $conditions[] = [$condition => $filter->getValue()];
-            }
-
-            if ($fields) {
-                $collection->addFieldToFilter($fields, $conditions);
-            }
-        }
-    }
-
-    /**
-     * @param SearchCriteriaInterface $criteria
-     * @param $collection
-     * @return void
-     */
-    private function addSortOrdersCriteria(SearchCriteriaInterface $criteria, $collection): void
-    {
-        $sortOrders = $criteria->getSortOrders();
-
-        if ($sortOrders) {
-
-            /** @var SortOrder $sortOrder */
-            foreach ($sortOrders as $sortOrder) {
-                $collection->addOrder(
-                    $sortOrder->getField(),
-                    ($sortOrder->getDirection() === SortOrder::SORT_ASC) ? 'ASC' : 'DESC'
-                );
-            }
-        }
+        return $this->delete($this->getById($id));
     }
 }

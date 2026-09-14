@@ -1,0 +1,17 @@
+{
+    "name": "m2/module-mvvm",
+    "description": "Magento 2 snippet: admin CRUD with UI listing and form, frontend view model",
+    "type": "magento2-module",
+    "require": {
+        "php": "~8.3.0||~8.4.0",
+        "magento/framework": "103.0.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "M2\\MVVM\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    }
+}

@@ -1,5 +1,13 @@
 <?xml version="1.0"?>
+<!--
+    Changed: setup_version removed (no setup scripts); <sequence> lists Magento_Theme, which provides the page
+    layout and head this module adds assets to.
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="M2_Frontend" setup_version="0.0.1"/>
+    <module name="M2_Frontend">
+        <sequence>
+            <module name="Magento_Theme"/>
+        </sequence>
+    </module>
 </config>

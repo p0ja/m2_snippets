@@ -1,5 +1,15 @@
 <?xml version="1.0"?>
+<!--
+    Changed: setup_version removed (no setup scripts), and <sequence> lists the modules whose UI components and
+    JavaScript this module uses: the backend page, the UI component library and the customer data component.
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="M2_Knockout" setup_version="0.0.1"/>
+    <module name="M2_Knockout">
+        <sequence>
+            <module name="Magento_Backend"/>
+            <module name="Magento_Ui"/>
+            <module name="Magento_Customer"/>
+        </sequence>
+    </module>
 </config>

@@ -1,49 +1,96 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dev\Grid\Controller\Adminhtml\Category;
 
 use Magento\Backend\App\Action;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
-use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Ui\Component\MassAction\Filter;
+use Throwable;
 
-class MassDelete extends Action
+/**
+ * Mass delete action of the category listing example grid.
+ *
+ * Changed:
+ * - HttpPostActionInterface replaces the manual isPost() check, so the router rejects other methods;
+ * - CategoryRepositoryInterface is a required constructor dependency instead of an ObjectManager fallback;
+ * - the tree root and the store root categories (level 0 and 1) are skipped. "Select all" in the grid is not
+ *   limited to the listed rows, so the example could delete every category including the roots, which breaks
+ *   the catalog of every store;
+ * - one failing category no longer stops the loop and shows a raw exception.
+ */
+class MassDelete extends Action implements HttpPostActionInterface
 {
-    const ADMIN_RESOURCE = 'Magento_Catalog::categories';
+    public const ADMIN_RESOURCE = 'Magento_Catalog::categories';
 
+    /**
+     * Categories below this tree level are the tree root (0) and the store root categories (1).
+     */
+    private const MIN_DELETABLE_LEVEL = 2;
+
+    /**
+     * Constructor
+     *
+     * @param Action\Context $context
+     * @param Filter $filter
+     * @param CollectionFactory $collectionFactory
+     * @param CategoryRepositoryInterface $categoryRepository
+     */
     public function __construct(
-        protected Action\Context $context,
+        Action\Context $context,
         private readonly Filter $filter,
         private readonly CollectionFactory $collectionFactory,
-        private ?CategoryRepositoryInterface $categoryRepository = null
+        private readonly CategoryRepositoryInterface $categoryRepository
     ) {
-        $this->categoryRepository = $categoryRepository
-            ?: ObjectManager::getInstance()->create(CategoryRepositoryInterface::class);
-
         parent::__construct($context);
     }
 
+    /**
+     * Execute
+     *
+     * @return ResultInterface
+     * @throws LocalizedException
+     */
     public function execute(): ResultInterface
     {
-        if (!$this->getRequest()->isPost()) {
-            throw new NotFoundException(__('Page not found'));
-        }
-
         $collection = $this->filter->getCollection($this->collectionFactory->create());
         $categoryDeleted = 0;
+        $categorySkipped = 0;
 
+        /** @var Category $category */
         foreach ($collection->getItems() as $category) {
-            $this->categoryRepository->delete($category);
-            $categoryDeleted++;
+            if ((int)$category->getLevel() < self::MIN_DELETABLE_LEVEL) {
+                $categorySkipped++;
+                continue;
+            }
+
+            try {
+                $this->categoryRepository->delete($category);
+                $categoryDeleted++;
+            } catch (Throwable $e) {
+                $this->messageManager->addExceptionMessage(
+                    $e,
+                    __('The category with ID %1 could not be deleted.', $category->getId())
+                );
+            }
         }
 
         if ($categoryDeleted) {
             $this->messageManager->addSuccessMessage(
                 __('A total of %1 record(s) have been deleted.', $categoryDeleted)
+            );
+        }
+
+        if ($categorySkipped) {
+            $this->messageManager->addWarningMessage(
+                __('%1 root categories were skipped, they cannot be deleted here.', $categorySkipped)
             );
         }
 
